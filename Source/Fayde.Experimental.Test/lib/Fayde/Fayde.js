@@ -5877,6 +5877,7 @@ var Fayde;
                 ButtonBase.prototype.OnMouseEnter = function (e) {
                     var _this = this;
                     _super.prototype.OnMouseEnter.call(this, e);
+                    this.UpdateVisualState();
 
                     if (this.ClickMode !== 2 /* Hover */ || !this.IsEnabled)
                         return;
@@ -5889,6 +5890,7 @@ var Fayde;
                 ButtonBase.prototype.OnMouseLeave = function (e) {
                     var _this = this;
                     _super.prototype.OnMouseLeave.call(this, e);
+                    this.UpdateVisualState();
 
                     if (this.ClickMode !== 2 /* Hover */ || !this.IsEnabled)
                         return;
@@ -7012,7 +7014,7 @@ var Fayde;
                             }
                             break;
                         case 3 /* Replace */:
-                            items[e.NewStartingIndex] = e.NewItems[0];
+                            items.SetValueAt(e.NewStartingIndex, e.NewItems[0]);
                             break;
                         case 4 /* Reset */:
                             items.Clear();

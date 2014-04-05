@@ -9,7 +9,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>0.9</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
     <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -25,10 +25,10 @@
     <Content Include="lib\qunit\qunit-1.13.0.css" />
     <Content Include="lib\qunit\qunit-1.13.0.js" />
     <Content Include="lib\qunit\qunit.d.ts" />
+    <TypeScriptCompile Include="ViewModels\MainViewModel.ts" />
     <Content Include="lib\requirejs\require.d.ts" />
     <Content Include="lib\requirejs\require.js" />
     <Content Include="lib\requirejs\text.js" />
-    <TypeScriptCompile Include="ViewModels\MainViewModel.ts" />
     <Content Include="Tests\default.html" />
     <TypeScriptCompile Include="Tests\runner.ts" />
     <TypeScriptCompile Include="Tests\GridItemsControlTests.ts" />
@@ -88,11 +88,4 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets')" />
-  <Import Project="..\packages\Fayde.0.9.8.19\build\Fayde.targets" Condition="Exists('..\packages\Fayde.0.9.8.19\build\Fayde.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Fayde.0.9.8.19\build\Fayde.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fayde.0.9.8.19\build\Fayde.targets'))" />
-  </Target>
 </Project>

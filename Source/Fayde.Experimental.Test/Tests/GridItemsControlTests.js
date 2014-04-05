@@ -4,7 +4,7 @@
 define(["require", "exports"], function(require, exports) {
     var Grid = Fayde.Controls.Grid;
     var GridItemsControl = Fayde.Experimental.GridItemsControl;
-    var GridItemsPresenter = Fayde.Experimental.GridItemsPresenter;
+
     var GridTextColumn = Fayde.Experimental.GridTextColumn;
 
     function run() {
