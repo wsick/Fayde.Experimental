@@ -18,7 +18,6 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Background" Value="Silver" />
         <Setter Property="Padding" Value="5" />
-        <Setter Property="Margin" Value="1,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="exp:GridHeaderCell">
