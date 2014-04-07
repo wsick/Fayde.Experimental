@@ -15,8 +15,30 @@ module Fayde.Experimental {
         CornerRadius: CornerRadius;
 
         private _HoverRow: number = -1;
-        private _InGrid: boolean = false;
         private _Element: UIElement = null;
+        private _InGrid: boolean = false;
+
+        CreateElement(): UIElement {
+            var el = new Border();
+            
+            var binding = new Data.Binding("Background");
+            binding.Source = this;
+            el.SetBinding(Border.BackgroundProperty, binding);
+
+            binding = new Data.Binding("BorderBrush");
+            binding.Source = this;
+            el.SetBinding(Border.BorderBrushProperty, binding);
+
+            binding = new Data.Binding("BorderThickness");
+            binding.Source = this;
+            el.SetBinding(Border.BorderThicknessProperty, binding);
+
+            binding = new Data.Binding("CornerRadius");
+            binding.Source = this;
+            el.SetBinding(Border.CornerRadiusProperty, binding);
+
+            return el;
+        }
 
         OnAttached(gic: GridItemsControl) {
             super.OnAttached(gic);
@@ -41,18 +63,24 @@ module Fayde.Experimental {
         private _MouseMove(sender: any, e: Input.MouseEventArgs) {
             var grid = <Grid>sender;
             var pos = e.GetPosition(grid);
-            var row = this._InGrid ? getRow(pos.Y, grid) : -1;
+            this._SetHoverRow(isInGrid(pos.X, grid) ? getRow(pos.Y, grid) : -1);
+        }
+        private _MouseEnter(sender: any, e: Input.MouseEventArgs) {
+            this._InGrid = true;
+            var grid = <Grid>sender;
+            var pos = e.GetPosition(grid);
+            this._SetHoverRow(isInGrid(pos.X, grid) ? getRow(pos.Y, grid) : -1);
+        }
+        private _MouseLeave(sender: any, e: Input.MouseEventArgs) {
+            this._InGrid = false;
+            this._SetHoverRow(-1);
+        }
+        private _SetHoverRow(row: number) {
             if (this._HoverRow === row)
                 return;
             var oldRow = this._HoverRow;
             this._HoverRow = row;
             this.OnHoverRowChanged(oldRow, row);
-        }
-        private _MouseEnter(sender: any, e: Input.MouseEventArgs) {
-            this._InGrid = true;
-        }
-        private _MouseLeave(sender: any, e: Input.MouseEventArgs) {
-            this._InGrid = false;
         }
         OnHoverRowChanged(oldRow: number, newRow: number) {
             var el = this._Element;
@@ -61,29 +89,18 @@ module Fayde.Experimental {
             el.Visibility = newRow > -1 ? Visibility.Visible : Visibility.Collapsed;
             Grid.SetRow(el, newRow > -1 ? newRow : 0);
         }
-        CreateElement(): UIElement {
-            var el = new Border();
-            
-            var binding = new Data.Binding("Background");
-            binding.Source = this;
-            el.SetBinding(Border.BackgroundProperty, binding);
-
-            binding = new Data.Binding("BorderBrush");
-            binding.Source = this;
-            el.SetBinding(Border.BorderBrushProperty, binding);
-
-            binding = new Data.Binding("BorderThickness");
-            binding.Source = this;
-            el.SetBinding(Border.BorderThicknessProperty, binding);
-
-            binding = new Data.Binding("CornerRadius");
-            binding.Source = this;
-            el.SetBinding(Border.CornerRadiusProperty, binding);
-
-            return el;
-        }
     }
 
+    function isInGrid(posX: number, grid: Grid): boolean {
+        if (posX < 0 || posX >= grid.ActualWidth)
+            return false;
+        for (var enumerator = grid.ColumnDefinitions.GetEnumerator(); enumerator.MoveNext();) {
+            posX -= enumerator.Current.ActualWidth;
+            if (posX < 0)
+                return true;
+        }
+        return false;
+    }
     function getRow(posY: number, grid: Grid): number {
         if (posY < 0)
             return i;
