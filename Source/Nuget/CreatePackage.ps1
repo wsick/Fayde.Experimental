@@ -24,5 +24,5 @@ $specxml.Load($specfile)
 $specxml.package.metadata.version = $newversion
 Set-Content $specfile $specxml.OuterXml
 
-$deploydir = $PWD.Path + "\..\..\..\Packages\Nuget\"
+$deploydir = $PWD.Path + "\..\..\Packages\"
 nuget pack $specfile -Version $newversion -OutputDirectory $deploydir
