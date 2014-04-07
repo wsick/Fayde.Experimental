@@ -22,6 +22,7 @@ module Fayde.Experimental {
                 return false;
 
             this._ElementRoot = new Grid();
+            this._ElementRoot.Background = new Fayde.Media.SolidColorBrush(Color.KnownColors.Transparent);
 
             if (!this.FinishApplyTemplateWithError(this._ElementRoot, error))
                 return false;

@@ -43,6 +43,8 @@ module Fayde.Experimental {
         XamlNode: GridItemsControlNode;
         CreateNode(): GridItemsControlNode { return new GridItemsControlNode(this); }
 
+        get ItemsPresenter(): GridItemsPresenter { return this.XamlNode.ItemsPresenter; }
+
         static ItemsSourceProperty = DependencyProperty.Register("ItemsSource", () => IEnumerable_, GridItemsControl, null, (d, args) => (<GridItemsControl>d).OnItemsSourceChanged(args.OldValue, args.NewValue));
         ItemsSource: IEnumerable<any>;
         OnItemsSourceChanged(oldItemsSource: IEnumerable<any>, newItemsSource: IEnumerable<any>) {
