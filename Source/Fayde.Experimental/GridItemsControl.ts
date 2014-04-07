@@ -46,7 +46,12 @@ module Fayde.Experimental {
         get ItemsPresenter(): GridItemsPresenter { return this.XamlNode.ItemsPresenter; }
 
         static ItemsSourceProperty = DependencyProperty.Register("ItemsSource", () => IEnumerable_, GridItemsControl, null, (d, args) => (<GridItemsControl>d).OnItemsSourceChanged(args.OldValue, args.NewValue));
+        static ColumnsProperty = DependencyProperty.RegisterImmutable<GridColumnCollection>("Columns", () => GridColumnCollection, GridItemsControl);
+        static AdornersProperty = DependencyProperty.RegisterImmutable<Primitives.GridAdornerCollection>("Adorners", () => Primitives.GridAdornerCollection, GridItemsControl);
         ItemsSource: IEnumerable<any>;
+        Columns: GridColumnCollection;
+        Adorners: Primitives.GridAdornerCollection;
+
         OnItemsSourceChanged(oldItemsSource: IEnumerable<any>, newItemsSource: IEnumerable<any>) {
             var nc = Collections.INotifyCollectionChanged_.As(oldItemsSource);
             if (nc)
@@ -76,12 +81,6 @@ module Fayde.Experimental {
                     break;
             }
         }
-
-        static ColumnsProperty = DependencyProperty.RegisterImmutable<GridColumnCollection>("Columns", () => GridColumnCollection, GridItemsControl);
-        Columns: GridColumnCollection;
-
-        static AdornersProperty = DependencyProperty.RegisterImmutable<Primitives.GridAdornerCollection>("Adorners", () => Primitives.GridAdornerCollection, GridItemsControl);
-        Adorners: Primitives.GridAdornerCollection;
 
         private _Items: any[] = [];
         get Items(): any[] { return this._Items; }
