@@ -8,7 +8,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="exp:GridItemsControl">
-                    <exp:GridItemsPresenter />
+                    <Grid Background="{TemplateBinding Background}">
+                        <exp:GridItemsPresenter />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

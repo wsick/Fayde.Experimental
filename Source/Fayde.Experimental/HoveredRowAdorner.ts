@@ -9,10 +9,12 @@ module Fayde.Experimental {
         static BorderBrushProperty = DependencyProperty.Register("BorderBrush", () => Media.Brush, HoveredRowAdorner);
         static BorderThicknessProperty = DependencyProperty.Register("BorderThickness", () => Thickness, HoveredRowAdorner);
         static CornerRadiusProperty = DependencyProperty.Register("CornerRadius", () => CornerRadius, HoveredRowAdorner);
+        static CursorProperty = DependencyProperty.Register("Cursor", () => new Enum(Fayde.CursorType), HoveredRowAdorner, Fayde.CursorType.Hand);
         Background: Media.Brush;
         BorderBrush: Media.Brush;
         BorderThickness: Thickness;
         CornerRadius: CornerRadius;
+        Cursor: Fayde.CursorType;
 
         private _HoverRow: number = -1;
         private _Element: UIElement = null;
@@ -36,6 +38,10 @@ module Fayde.Experimental {
             binding = new Data.Binding("CornerRadius");
             binding.Source = this;
             el.SetBinding(Border.CornerRadiusProperty, binding);
+
+            binding = new Data.Binding("Cursor");
+            binding.Source = this;
+            el.SetBinding(FrameworkElement.CursorProperty, binding);
 
             return el;
         }
