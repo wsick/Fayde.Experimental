@@ -31,6 +31,11 @@ module Fayde.Experimental {
                 listeners[i](presenter);
             }
             this._CreatorListeners = null;
+
+            var gic = this.XObject;
+            for (var i = 0, adorners = gic.Adorners.ToArray(), len = adorners.length; i < len; i++) {
+                adorners[i].OnAttached(gic);
+            }
         }
     }
 
@@ -145,6 +150,10 @@ module Fayde.Experimental {
         }
 
         private _AdornersChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
+            var presenter = this.XamlNode.ItemsPresenter;
+            if (!presenter)
+                return;
+
             var oldItems = <Primitives.GridAdorner[]>e.NewItems;
             for (var i = 0, len = oldItems ? oldItems.length : 0; i < len; i++) {
                 oldItems[i].OnDetached(this);
