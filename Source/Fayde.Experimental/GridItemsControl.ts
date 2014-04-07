@@ -27,7 +27,7 @@ module Fayde.Experimental {
             var presenter = this.ItemsPresenter;
             if (!presenter)
                 return;
-            for (var i = 0, listeners = this._CreatorListeners, len = listeners.length; i < len; i++) {
+            for (var i = 0, listeners = this._CreatorListeners, len = listeners ? listeners.length : 0; i < len; i++) {
                 listeners[i](presenter);
             }
             this._CreatorListeners = null;
@@ -100,7 +100,6 @@ module Fayde.Experimental {
 
             var ads = GridItemsControl.AdornersProperty.Initialize(this);
             ads.CollectionChanged.Subscribe(this._AdornersChanged, this);
-            ads.ItemChanged.Subscribe(this._AdornerChanged, this);
         }
 
         OnItemsAdded(index: number, newItems: any[]) {
@@ -144,17 +143,17 @@ module Fayde.Experimental {
                 return;
             presenter.OnColumnChanged(e.Item);
         }
-        
-        private _AdornersChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
-            var presenter = this.XamlNode.ItemsPresenter;
-            if (!presenter)
-                return;
-        }
-        private _AdornerChanged(sender: any, e: Internal.ItemChangedEventArgs<Primitives.GridAdorner>) {
-            var presenter = this.XamlNode.ItemsPresenter;
-            if (!presenter)
-                return;
 
+        private _AdornersChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
+            var oldItems = <Primitives.GridAdorner[]>e.NewItems;
+            for (var i = 0, len = oldItems ? oldItems.length : 0; i < len; i++) {
+                oldItems[i].OnDetached(this);
+            }
+
+            var newItems = <Primitives.GridAdorner[]>e.NewItems;
+            for (var i = 0, len = newItems ? newItems.length : 0; i < len; i++) {
+                newItems[i].OnAttached(this);
+            }
         }
     }
     Xaml.Content(GridItemsControl, GridItemsControl.ColumnsProperty);
