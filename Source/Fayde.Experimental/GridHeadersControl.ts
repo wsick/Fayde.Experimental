@@ -36,7 +36,7 @@ module Fayde.Experimental {
             this.DefaultStyleKey = (<any>this).constructor;
             var coll = GridHeadersControl.HeadersProperty.Initialize(this);
             coll.CollectionChanged.Subscribe(this._HeadersChanged, this);
-            coll.HeaderChanged.Subscribe(this._HeaderChanged, this);
+            coll.ItemChanged.Subscribe(this._HeaderChanged, this);
         }
         
         private _HeadersChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
@@ -63,11 +63,11 @@ module Fayde.Experimental {
                     break;
             }
         }
-        private _HeaderChanged(sender: any, e: GridHeaderChangedEventArgs) {
+        private _HeaderChanged(sender: any, e: Internal.ItemChangedEventArgs<GridHeader>) {
             var presenter = this.XamlNode.HeadersPresenter;
             if (!presenter)
                 return;
-            presenter.OnHeaderChanged(e.GridHeader);
+            presenter.OnHeaderChanged(e.Item);
         }
     }
     Xaml.Content(GridHeadersControl, GridHeadersControl.HeadersProperty);

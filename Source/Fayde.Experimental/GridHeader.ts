@@ -1,3 +1,5 @@
+/// <reference path="Internal/ItemChangedCollection.ts" />
+
 module Fayde.Experimental {
     import ContentControl = Fayde.Controls.ContentControl;
 
@@ -39,21 +41,6 @@ module Fayde.Experimental {
         }
     }
 
-    export class GridHeaderCollection extends XamlObjectCollection<GridHeader> {
-        HeaderChanged = new MulticastEvent<GridHeaderChangedEventArgs>();
-        CollectionChanged = new MulticastEvent<Collections.NotifyCollectionChangedEventArgs>();
-
-        _RaiseItemAdded(value: GridHeader, index: number) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Add(value, index));
-        }
-        _RaiseItemRemoved(value: GridHeader, index: number) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Remove(value, index));
-        }
-        _RaiseItemReplaced(removed: GridHeader, added: GridHeader, index: number) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Replace(added, removed, index));
-        }
-        _RaiseCleared(old: GridHeader[]) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Reset(old));
-        }
+    export class GridHeaderCollection extends Internal.ItemChangedCollection<GridHeader> {
     }
 }

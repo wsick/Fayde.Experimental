@@ -7,7 +7,7 @@ module Fayde.Experimental {
         private OnBindingChanged(args: IDependencyPropertyChangedEventArgs) {
             var gcc = <GridColumnCollection>this.Parent;
             if (gcc instanceof GridColumnCollection)
-                gcc.ColumnChanged.Raise(gcc, new GridColumnChangedEventArgs(this));
+                gcc.ItemChanged.Raise(gcc, new Internal.ItemChangedEventArgs<GridColumn>(this));
         }
 
         PrepareContainerForCell(cell: UIElement, item: any) {

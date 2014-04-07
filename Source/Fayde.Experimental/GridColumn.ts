@@ -1,3 +1,5 @@
+/// <reference path="Internal/ItemChangedCollection.ts" />
+
 module Fayde.Experimental {
     import GridLength = Fayde.Controls.GridLength;
     import ColumnDefinition = Fayde.Controls.ColumnDefinition;
@@ -75,22 +77,7 @@ module Fayde.Experimental {
         }
     }
 
-    export class GridColumnCollection extends XamlObjectCollection<GridColumn> {
-        ColumnChanged = new MulticastEvent<GridColumnChangedEventArgs>();
-        CollectionChanged = new MulticastEvent<Collections.NotifyCollectionChangedEventArgs>();
-
-        _RaiseItemAdded(value: GridColumn, index: number) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Add(value, index));
-        }
-        _RaiseItemRemoved(value: GridColumn, index: number) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Remove(value, index));
-        }
-        _RaiseItemReplaced(removed: GridColumn, added: GridColumn, index: number) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Replace(added, removed, index));
-        }
-        _RaiseCleared(old: GridColumn[]) {
-            this.CollectionChanged.Raise(this, Collections.NotifyCollectionChangedEventArgs.Reset(old));
-        }
+    export class GridColumnCollection extends Internal.ItemChangedCollection<GridColumn> {
     }
 
     class EmptyWidthConverter implements Data.IValueConverter {

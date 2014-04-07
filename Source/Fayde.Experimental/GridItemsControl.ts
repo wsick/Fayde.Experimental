@@ -73,6 +73,9 @@ module Fayde.Experimental {
         static ColumnsProperty = DependencyProperty.RegisterImmutable<GridColumnCollection>("Columns", () => GridColumnCollection, GridItemsControl);
         Columns: GridColumnCollection;
 
+        static AdornersProperty = DependencyProperty.RegisterImmutable<GridAdornerCollection>("Adorners", () => GridAdornerCollection, GridItemsControl);
+        Adorners: GridAdornerCollection;
+
         private _Items: any[] = [];
         get Items(): any[] { return this._Items; }
         private _AddItems(index: number, newItems: any[]) {
@@ -90,9 +93,14 @@ module Fayde.Experimental {
         constructor() {
             super();
             this.DefaultStyleKey = (<any>this).constructor;
-            var coll = GridItemsControl.ColumnsProperty.Initialize(this);
-            coll.CollectionChanged.Subscribe(this._ColumnsChanged, this);
-            coll.ColumnChanged.Subscribe(this._ColumnChanged, this);
+
+            var cols = GridItemsControl.ColumnsProperty.Initialize(this);
+            cols.CollectionChanged.Subscribe(this._ColumnsChanged, this);
+            cols.ItemChanged.Subscribe(this._ColumnChanged, this);
+
+            var ads = GridItemsControl.AdornersProperty.Initialize(this);
+            ads.CollectionChanged.Subscribe(this._AdornersChanged, this);
+            ads.ItemChanged.Subscribe(this._AdornerChanged, this);
         }
 
         OnItemsAdded(index: number, newItems: any[]) {
@@ -130,11 +138,23 @@ module Fayde.Experimental {
                     break;
             }
         }
-        private _ColumnChanged(sender: any, e: GridColumnChangedEventArgs) {
+        private _ColumnChanged(sender: any, e: Internal.ItemChangedEventArgs<GridColumn>) {
             var presenter = this.XamlNode.ItemsPresenter;
             if (!presenter)
                 return;
-            presenter.OnColumnChanged(e.GridColumn);
+            presenter.OnColumnChanged(e.Item);
+        }
+        
+        private _AdornersChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
+            var presenter = this.XamlNode.ItemsPresenter;
+            if (!presenter)
+                return;
+        }
+        private _AdornerChanged(sender: any, e: Internal.ItemChangedEventArgs<GridAdorner>) {
+            var presenter = this.XamlNode.ItemsPresenter;
+            if (!presenter)
+                return;
+
         }
     }
     Xaml.Content(GridItemsControl, GridItemsControl.ColumnsProperty);
