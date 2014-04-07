@@ -116,10 +116,11 @@ module Fayde.Experimental {
                 //Clear containers
                 for (var containers = this._CellContainers, i = containers.length - 1; i >= 0; i--) {
                     for (var j = cols.length - 1; j >= 0; j--) {
-                        cols[j].ClearContainerForCell(containers[i][j], items[i]);
+                        var container = containers[i][j];
+                        cols[j].ClearContainerForCell(container, items[i]);
+                        grid.Children.Remove(container);
                     }
                 }
-                grid.Children.Clear();
             }
             for (var j = 0, len = cols.length; j < len; j++) {
                 cols[j].DetachDefinition();
