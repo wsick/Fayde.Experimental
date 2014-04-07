@@ -24,6 +24,12 @@
             <exp:GridHeader Header="Last Name" />
         </exp:GridHeadersControl>
         <exp:GridItemsControl x:Name="ItemsControl" ItemsSource="{Binding Items}" FontSize="30" Grid.Row="1">
+            <exp:GridItemsControl.Adorners>
+                <exp:HoveredRowAdorner Background="#F1F1F1" />
+                <exp:HighlightedRowAdorner IsVisible="{Binding ActionTaken}" Background="#666666" />
+                <exp:HighlightedRowAdorner IsVisible="{Binding Urgent}" Background="#8e2828" />
+                <exp:SelectedRowAdorner />
+            </exp:GridItemsControl.Adorners>
             <exp:GridTemplateColumn>
                 <exp:GridTemplateColumn.CellTemplate>
                     <DataTemplate>

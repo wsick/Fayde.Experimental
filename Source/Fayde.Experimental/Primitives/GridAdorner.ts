@@ -1,6 +1,6 @@
-﻿/// <reference path="Internal/ItemChangedCollection.ts" />
+﻿/// <reference path="../Internal/ItemChangedCollection.ts" />
 
-module Fayde.Experimental {
+module Fayde.Experimental.Primitives {
     export class GridAdorner extends DependencyObject {
     }
 
