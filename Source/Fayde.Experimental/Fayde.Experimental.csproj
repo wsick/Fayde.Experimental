@@ -90,7 +90,8 @@
     <TypeScriptCompile Include="Internal\ItemChangedCollection.ts" />
     <TypeScriptCompile Include="Primitives\GridAdorner.ts" />
     <TypeScriptCompile Include="HoveredRowAdorner.ts" />
-    <TypeScriptCompile Include="HighlightedRowAdorner.ts" />
+    <TypeScriptCompile Include="SelectedRowAdorner.ts" />
+    <TypeScriptCompile Include="SelectionChangedEventArgs.ts" />
     <Content Include="Themes\Metro.theme.xml">
       <SubType>Designer</SubType>
     </Content>

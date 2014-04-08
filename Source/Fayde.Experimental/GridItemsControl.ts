@@ -72,6 +72,11 @@ module Fayde.Experimental {
         SelectedItem: any;
         SelectedRow: number;
 
+        SelectionChanged = new MulticastEvent<SelectionChangedEventArgs>();
+        OnSelectionChanged() {
+            this.SelectionChanged.Raise(this, new SelectionChangedEventArgs(this.SelectedItem, this.SelectedRow));
+        }
+
         OnItemsSourceChanged(oldItemsSource: IEnumerable<any>, newItemsSource: IEnumerable<any>) {
             var nc = Collections.INotifyCollectionChanged_.As(oldItemsSource);
             if (nc)
@@ -112,6 +117,7 @@ module Fayde.Experimental {
             } finally {
                 this._IsCoercing = false;
             }
+            this.OnSelectionChanged();
         }
         OnSelectedRowChanged(oldRow: number, newRow: number) {
             if (this._IsCoercing)
@@ -122,6 +128,7 @@ module Fayde.Experimental {
             } finally {
                 this._IsCoercing = false;
             }
+            this.OnSelectionChanged();
         }
 
         private _Items: any[] = [];
