@@ -1,5 +1,7 @@
 
 module Fayde.Experimental {
+    import Grid = Fayde.Controls.Grid;
+
     export class GridItemsControlNode extends Fayde.Controls.ControlNode {
         XObject: GridItemsControl;
         constructor(xobj: GridItemsControl) {
@@ -32,10 +34,24 @@ module Fayde.Experimental {
             }
             this._CreatorListeners = null;
 
+            this.InitSelection(presenter.Panel);
+
             var gic = this.XObject;
             for (var i = 0, adorners = gic.Adorners.ToArray(), len = adorners.length; i < len; i++) {
                 adorners[i].OnAttached(gic);
             }
+        }
+
+        private InitSelection(grid: Grid) {
+            grid.MouseLeftButtonDown.Subscribe(this._MouseLeftButtonDown, this);
+        }
+        private _MouseLeftButtonDown(sender: any, e: Input.MouseButtonEventArgs) {
+            var grid = <Grid>sender;
+            var pos = e.GetPosition(grid);
+            var col = getCol(pos.X, grid);
+            var row = getRow(pos.Y, grid);
+            var xobj = this.XObject;
+            xobj.SetCurrentValue(GridItemsControl.SelectedRowProperty, row);
         }
     }
 
@@ -48,9 +64,13 @@ module Fayde.Experimental {
         static ItemsSourceProperty = DependencyProperty.Register("ItemsSource", () => IEnumerable_, GridItemsControl, null, (d, args) => (<GridItemsControl>d).OnItemsSourceChanged(args.OldValue, args.NewValue));
         static ColumnsProperty = DependencyProperty.RegisterImmutable<GridColumnCollection>("Columns", () => GridColumnCollection, GridItemsControl);
         static AdornersProperty = DependencyProperty.RegisterImmutable<Primitives.GridAdornerCollection>("Adorners", () => Primitives.GridAdornerCollection, GridItemsControl);
+        static SelectedItemProperty = DependencyProperty.Register("SelectedItem", () => Object, GridItemsControl, undefined, (d, args) => (<GridItemsControl>d).OnSelectedItemChanged(args.OldValue, args.NewValue));
+        static SelectedRowProperty = DependencyProperty.Register("SelectedRow", () => Number, GridItemsControl, -1, (d, args) => (<GridItemsControl>d).OnSelectedRowChanged(args.OldValue, args.NewValue));
         ItemsSource: IEnumerable<any>;
         Columns: GridColumnCollection;
         Adorners: Primitives.GridAdornerCollection;
+        SelectedItem: any;
+        SelectedRow: number;
 
         OnItemsSourceChanged(oldItemsSource: IEnumerable<any>, newItemsSource: IEnumerable<any>) {
             var nc = Collections.INotifyCollectionChanged_.As(oldItemsSource);
@@ -79,6 +99,28 @@ module Fayde.Experimental {
                 case Collections.NotifyCollectionChangedAction.Reset:
                     this._RemoveItems(0, e.OldItems);
                     break;
+            }
+        }
+
+        private _IsCoercing = false;
+        OnSelectedItemChanged(oldItem: any, newItem: any) {
+            if (this._IsCoercing)
+                return;
+            try {
+                this._IsCoercing = true;
+                this.SetCurrentValue(GridItemsControl.SelectedRowProperty, this._Items.indexOf(newItem));
+            } finally {
+                this._IsCoercing = false;
+            }
+        }
+        OnSelectedRowChanged(oldRow: number, newRow: number) {
+            if (this._IsCoercing)
+                return;
+            try {
+                this._IsCoercing = true;
+                this.SetCurrentValue(GridItemsControl.SelectedItemProperty, (newRow > -1 && newRow < this._Items.length) ? this._Items[newRow] : undefined);
+            } finally {
+                this._IsCoercing = false;
             }
         }
 
@@ -112,11 +154,25 @@ module Fayde.Experimental {
             var presenter = this.XamlNode.ItemsPresenter;
             if (presenter)
                 presenter.OnItemsAdded(index, newItems);
+            var item = this.SelectedItem;
+            var row = this.SelectedRow;
+            if (item === undefined && row > -1) {
+                this.SetCurrentValue(GridItemsControl.SelectedItemProperty, this._Items[row]);
+            } else if (item !== undefined && row < 0) {
+                this.SetCurrentValue(GridItemsControl.SelectedRowProperty, this._Items.indexOf(item));
+            }
         }
         OnItemsRemoved(index: number, oldItems: any[]) {
             var presenter = this.XamlNode.ItemsPresenter;
             if (presenter)
                 presenter.OnItemsRemoved(index, oldItems);
+            var item = this.SelectedItem;
+            var row = this.SelectedRow;
+            if (item !== undefined && oldItems.indexOf(item) > -1) {
+                this.SetCurrentValue(GridItemsControl.SelectedItemProperty, undefined);
+            } else if (row > -1 && (row >= index && row < (index + oldItems.length))) {
+                this.SetCurrentValue(GridItemsControl.SelectedRowProperty, -1);
+            }
         }
 
         private _ColumnsChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
@@ -167,4 +223,25 @@ module Fayde.Experimental {
         }
     }
     Xaml.Content(GridItemsControl, GridItemsControl.ColumnsProperty);
+    
+    function getCol(posX: number, grid: Grid): number {
+        if (posX < 0)
+            return i;
+        for (var i = 0, enumerator = grid.ColumnDefinitions.GetEnumerator(); posX > 0 && enumerator.MoveNext(); i++) {
+            posX -= enumerator.Current.ActualWidth;
+            if (posX < 0)
+                return i;
+        }
+        return -1;
+    }
+    function getRow(posY: number, grid: Grid): number {
+        if (posY < 0)
+            return i;
+        for (var i = 0, enumerator = grid.RowDefinitions.GetEnumerator(); posY > 0 && enumerator.MoveNext(); i++) {
+            posY -= enumerator.Current.ActualHeight;
+            if (posY < 0)
+                return i;
+        }
+        return -1;
+    }
 }

@@ -50,7 +50,7 @@ module Fayde.Experimental {
             super.OnAttached(gic);
             var grid = gic.ItemsPresenter.Panel;
             grid.Children.Add(this._Element = this.CreateElement());
-            Fayde.Controls.Panel.SetZIndex(this._Element, -1);
+            Fayde.Controls.Panel.SetZIndex(this._Element, -10);
             Grid.SetColumnSpan(this._Element, grid.ColumnDefinitions.Count);
             grid.MouseMove.Subscribe(this._MouseMove, this);
             grid.MouseEnter.Subscribe(this._MouseEnter, this);
