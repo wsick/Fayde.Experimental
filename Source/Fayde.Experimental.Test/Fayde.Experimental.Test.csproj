@@ -41,6 +41,7 @@
     <Content Include="default.fap">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Views\home.fayde" />
     <Content Include="packages.config" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
