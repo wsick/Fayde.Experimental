@@ -242,8 +242,10 @@ declare module Fayde.Experimental {
         public Cursor: CursorType;
         private _HoverRow;
         private _Element;
+        private _ForegroundElement;
         private _InGrid;
-        public CreateElement(): UIElement;
+        public CreateBackgroundElement(): UIElement;
+        public CreateForegroundElement(): UIElement;
         public OnAttached(gic: GridItemsControl): void;
         public OnDetached(gic: GridItemsControl): void;
         private _MouseMove(sender, e);

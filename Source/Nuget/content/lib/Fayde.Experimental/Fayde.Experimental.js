@@ -1249,9 +1249,10 @@ var Fayde;
                 _super.apply(this, arguments);
                 this._HoverRow = -1;
                 this._Element = null;
+                this._ForegroundElement = null;
                 this._InGrid = false;
             }
-            HoveredRowAdorner.prototype.CreateElement = function () {
+            HoveredRowAdorner.prototype.CreateBackgroundElement = function () {
                 var el = new Border();
 
                 var binding = new Fayde.Data.Binding("Background");
@@ -1270,9 +1271,19 @@ var Fayde;
                 binding.Source = this;
                 el.SetBinding(Border.CornerRadiusProperty, binding);
 
-                binding = new Fayde.Data.Binding("Cursor");
+                Fayde.Controls.Panel.SetZIndex(el, -10);
+
+                return el;
+            };
+            HoveredRowAdorner.prototype.CreateForegroundElement = function () {
+                var el = new Border();
+                el.Background = new Fayde.Media.SolidColorBrush(Color.KnownColors.Transparent);
+
+                var binding = new Fayde.Data.Binding("Cursor");
                 binding.Source = this;
                 el.SetBinding(Fayde.FrameworkElement.CursorProperty, binding);
+
+                Fayde.Controls.Panel.SetZIndex(el, 10);
 
                 return el;
             };
@@ -1280,9 +1291,10 @@ var Fayde;
             HoveredRowAdorner.prototype.OnAttached = function (gic) {
                 _super.prototype.OnAttached.call(this, gic);
                 var grid = gic.ItemsPresenter.Panel;
-                grid.Children.Add(this._Element = this.CreateElement());
-                Fayde.Controls.Panel.SetZIndex(this._Element, -10);
+                grid.Children.Add(this._Element = this.CreateBackgroundElement());
                 Grid.SetColumnSpan(this._Element, grid.ColumnDefinitions.Count);
+                grid.Children.Add(this._ForegroundElement = this.CreateForegroundElement());
+                Grid.SetColumnSpan(this._ForegroundElement, grid.ColumnDefinitions.Count);
                 grid.MouseMove.Subscribe(this._MouseMove, this);
                 grid.MouseEnter.Subscribe(this._MouseEnter, this);
                 grid.MouseLeave.Subscribe(this._MouseLeave, this);
@@ -1295,7 +1307,9 @@ var Fayde;
                 grid.MouseEnter.Unsubscribe(this._MouseEnter, this);
                 grid.MouseLeave.Unsubscribe(this._MouseLeave, this);
                 grid.Children.Remove(this._Element);
+                grid.Children.Remove(this._ForegroundElement);
                 this._Element = null;
+                this._ForegroundElement = null;
             };
             HoveredRowAdorner.prototype._MouseMove = function (sender, e) {
                 var grid = sender;
@@ -1321,10 +1335,15 @@ var Fayde;
             };
             HoveredRowAdorner.prototype.OnHoverRowChanged = function (oldRow, newRow) {
                 var el = this._Element;
-                if (!el)
-                    return;
-                el.Visibility = newRow > -1 ? 0 /* Visible */ : 1 /* Collapsed */;
-                Grid.SetRow(el, newRow > -1 ? newRow : 0);
+                var fel = this._ForegroundElement;
+                if (el) {
+                    el.Visibility = newRow > -1 ? 0 /* Visible */ : 1 /* Collapsed */;
+                    Grid.SetRow(el, newRow > -1 ? newRow : 0);
+                }
+                if (fel) {
+                    fel.Visibility = newRow > -1 ? 0 /* Visible */ : 1 /* Collapsed */;
+                    Grid.SetRow(fel, newRow > -1 ? newRow : 0);
+                }
             };
             HoveredRowAdorner.BackgroundProperty = DependencyProperty.Register("Background", function () {
                 return Fayde.Media.Brush;

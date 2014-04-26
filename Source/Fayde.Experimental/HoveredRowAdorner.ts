@@ -18,9 +18,10 @@ module Fayde.Experimental {
 
         private _HoverRow: number = -1;
         private _Element: UIElement = null;
+        private _ForegroundElement: UIElement = null;
         private _InGrid: boolean = false;
 
-        CreateElement(): UIElement {
+        CreateBackgroundElement(): UIElement {
             var el = new Border();
             
             var binding = new Data.Binding("Background");
@@ -39,9 +40,19 @@ module Fayde.Experimental {
             binding.Source = this;
             el.SetBinding(Border.CornerRadiusProperty, binding);
 
-            binding = new Data.Binding("Cursor");
+            Fayde.Controls.Panel.SetZIndex(el, -10);
+
+            return el;
+        }
+        CreateForegroundElement(): UIElement {
+            var el = new Border();
+            el.Background = new Fayde.Media.SolidColorBrush(Color.KnownColors.Transparent);
+            
+            var binding = new Data.Binding("Cursor");
             binding.Source = this;
             el.SetBinding(FrameworkElement.CursorProperty, binding);
+
+            Fayde.Controls.Panel.SetZIndex(el, 10);
 
             return el;
         }
@@ -49,9 +60,10 @@ module Fayde.Experimental {
         OnAttached(gic: GridItemsControl) {
             super.OnAttached(gic);
             var grid = gic.ItemsPresenter.Panel;
-            grid.Children.Add(this._Element = this.CreateElement());
-            Fayde.Controls.Panel.SetZIndex(this._Element, -10);
+            grid.Children.Add(this._Element = this.CreateBackgroundElement());
             Grid.SetColumnSpan(this._Element, grid.ColumnDefinitions.Count);
+            grid.Children.Add(this._ForegroundElement = this.CreateForegroundElement());
+            Grid.SetColumnSpan(this._ForegroundElement, grid.ColumnDefinitions.Count);
             grid.MouseMove.Subscribe(this._MouseMove, this);
             grid.MouseEnter.Subscribe(this._MouseEnter, this);
             grid.MouseLeave.Subscribe(this._MouseLeave, this);
@@ -64,7 +76,9 @@ module Fayde.Experimental {
             grid.MouseEnter.Unsubscribe(this._MouseEnter, this);
             grid.MouseLeave.Unsubscribe(this._MouseLeave, this);
             grid.Children.Remove(this._Element);
+            grid.Children.Remove(this._ForegroundElement);
             this._Element = null;
+            this._ForegroundElement = null;
         }
         private _MouseMove(sender: any, e: Input.MouseEventArgs) {
             var grid = <Grid>sender;
@@ -90,10 +104,15 @@ module Fayde.Experimental {
         }
         OnHoverRowChanged(oldRow: number, newRow: number) {
             var el = this._Element;
-            if (!el)
-                return;
-            el.Visibility = newRow > -1 ? Visibility.Visible : Visibility.Collapsed;
-            Grid.SetRow(el, newRow > -1 ? newRow : 0);
+            var fel = this._ForegroundElement;
+            if (el) {
+                el.Visibility = newRow > -1 ? Visibility.Visible : Visibility.Collapsed;
+                Grid.SetRow(el, newRow > -1 ? newRow : 0);
+            }
+            if (fel) {
+                fel.Visibility = newRow > -1 ? Visibility.Visible : Visibility.Collapsed;
+                Grid.SetRow(fel, newRow > -1 ? newRow : 0);
+            }
         }
     }
 
