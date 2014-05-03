@@ -7,6 +7,8 @@
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
+        var Grid = Fayde.Controls.Grid;
+
         var GridItemsControlNode = (function (_super) {
             __extends(GridItemsControlNode, _super);
             function GridItemsControlNode(xobj) {
@@ -38,7 +40,7 @@ var Fayde;
                 }
                 this._CreatorListeners = null;
 
-                this.InitSelection(presenter.Panel);
+                this.InitSelection(presenter);
 
                 var gic = this.XObject;
                 for (var i = 0, adorners = gic.Adorners.ToArray(), len = adorners.length; i < len; i++) {
@@ -46,16 +48,15 @@ var Fayde;
                 }
             };
 
-            GridItemsControlNode.prototype.InitSelection = function (grid) {
-                grid.MouseLeftButtonDown.Subscribe(this._MouseLeftButtonDown, this);
-            };
-            GridItemsControlNode.prototype._MouseLeftButtonDown = function (sender, e) {
-                var grid = sender;
-                var pos = e.GetPosition(grid);
-                var col = getCol(pos.X, grid);
-                var row = getRow(pos.Y, grid);
+            GridItemsControlNode.prototype._CellClicked = function (sender, e) {
+                var row = Grid.GetRow(e.Cell);
+                var col = Grid.GetColumn(e.Cell);
                 var xobj = this.XObject;
                 xobj.SetCurrentValue(GridItemsControl.SelectedRowProperty, row);
+            };
+
+            GridItemsControlNode.prototype.InitSelection = function (presenter) {
+                presenter.CellClicked.Subscribe(this._CellClicked, this);
             };
             return GridItemsControlNode;
         })(Fayde.Controls.ControlNode);
@@ -64,11 +65,18 @@ var Fayde;
         var GridItemsControl = (function (_super) {
             __extends(GridItemsControl, _super);
             function GridItemsControl() {
+                var _this = this;
                 _super.call(this);
                 this.SelectionChanged = new MulticastEvent();
-                this._IsCoercing = false;
+                this.EditingChanged = new MulticastEvent();
+                this._IsCoercingSel = false;
+                this._IsCoercingEdit = false;
                 this._Items = [];
                 this.DefaultStyleKey = this.constructor;
+
+                this._EditCommand = new Fayde.MVVM.RelayCommand(function (args) {
+                    return _this.EditingItem = args.parameter;
+                });
 
                 var cols = GridItemsControl.ColumnsProperty.Initialize(this);
                 cols.CollectionChanged.Subscribe(this._ColumnsChanged, this);
@@ -81,6 +89,14 @@ var Fayde;
                 return new GridItemsControlNode(this);
             };
 
+            Object.defineProperty(GridItemsControl.prototype, "IsItemsControl", {
+                get: function () {
+                    return true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(GridItemsControl.prototype, "ItemsPresenter", {
                 get: function () {
                     return this.XamlNode.ItemsPresenter;
@@ -91,6 +107,13 @@ var Fayde;
 
             GridItemsControl.prototype.OnSelectionChanged = function () {
                 this.SelectionChanged.Raise(this, new Experimental.SelectionChangedEventArgs(this.SelectedItem, this.SelectedRow));
+            };
+
+            GridItemsControl.prototype.OnEditingChanged = function () {
+                var item = this.EditingItem;
+                var row = this.EditingRow;
+                this.ItemsPresenter.OnEditingItemChanged(item, row);
+                this.EditingChanged.Raise(this, new Experimental.EditingChangedEventArgs(item, row));
             };
 
             GridItemsControl.prototype.OnItemsSourceChanged = function (oldItemsSource, newItemsSource) {
@@ -124,26 +147,49 @@ var Fayde;
             };
 
             GridItemsControl.prototype.OnSelectedItemChanged = function (oldItem, newItem) {
-                if (this._IsCoercing)
+                if (this._IsCoercingSel)
                     return;
                 try  {
-                    this._IsCoercing = true;
+                    this._IsCoercingSel = true;
                     this.SetCurrentValue(GridItemsControl.SelectedRowProperty, this._Items.indexOf(newItem));
                 } finally {
-                    this._IsCoercing = false;
+                    this._IsCoercingSel = false;
                 }
                 this.OnSelectionChanged();
             };
             GridItemsControl.prototype.OnSelectedRowChanged = function (oldRow, newRow) {
-                if (this._IsCoercing)
+                if (this._IsCoercingSel)
                     return;
                 try  {
-                    this._IsCoercing = true;
+                    this._IsCoercingSel = true;
                     this.SetCurrentValue(GridItemsControl.SelectedItemProperty, (newRow > -1 && newRow < this._Items.length) ? this._Items[newRow] : undefined);
                 } finally {
-                    this._IsCoercing = false;
+                    this._IsCoercingSel = false;
                 }
                 this.OnSelectionChanged();
+            };
+
+            GridItemsControl.prototype.OnEditingItemChanged = function (oldItem, newItem) {
+                if (this._IsCoercingEdit)
+                    return;
+                try  {
+                    this._IsCoercingEdit = true;
+                    this.SetCurrentValue(GridItemsControl.EditingRowProperty, this._Items.indexOf(newItem));
+                } finally {
+                    this._IsCoercingEdit = false;
+                }
+                this.OnEditingChanged();
+            };
+            GridItemsControl.prototype.OnEditingRowChanged = function (oldRow, newRow) {
+                if (this._IsCoercingEdit)
+                    return;
+                try  {
+                    this._IsCoercingEdit = true;
+                    this.SetCurrentValue(GridItemsControl.EditingItemProperty, (newRow > -1 && newRow < this._Items.length) ? this._Items[newRow] : undefined);
+                } finally {
+                    this._IsCoercingEdit = false;
+                }
+                this.OnEditingChanged();
             };
 
             Object.defineProperty(GridItemsControl.prototype, "Items", {
@@ -164,6 +210,14 @@ var Fayde;
                 this._Items.splice(index, oldItems.length);
                 this.OnItemsRemoved(index, oldItems);
             };
+
+            Object.defineProperty(GridItemsControl.prototype, "EditCommand", {
+                get: function () {
+                    return this._EditCommand;
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             GridItemsControl.prototype.OnItemsAdded = function (index, newItems) {
                 var presenter = this.XamlNode.ItemsPresenter;
@@ -257,31 +311,20 @@ var Fayde;
             }, GridItemsControl, -1, function (d, args) {
                 return d.OnSelectedRowChanged(args.OldValue, args.NewValue);
             });
+            GridItemsControl.EditingItemProperty = DependencyProperty.Register("EditingItem", function () {
+                return Object;
+            }, GridItemsControl, undefined, function (d, args) {
+                return d.OnEditingItemChanged(args.OldValue, args.NewValue);
+            });
+            GridItemsControl.EditingRowProperty = DependencyProperty.Register("EditingRow", function () {
+                return Number;
+            }, GridItemsControl, -1, function (d, args) {
+                return d.OnEditingRowChanged(args.OldValue, args.NewValue);
+            });
             return GridItemsControl;
         })(Fayde.Controls.Control);
         Experimental.GridItemsControl = GridItemsControl;
         Fayde.Xaml.Content(GridItemsControl, GridItemsControl.ColumnsProperty);
-
-        function getCol(posX, grid) {
-            if (posX < 0)
-                return i;
-            for (var i = 0, enumerator = grid.ColumnDefinitions.GetEnumerator(); posX > 0 && enumerator.MoveNext(); i++) {
-                posX -= enumerator.Current.ActualWidth;
-                if (posX < 0)
-                    return i;
-            }
-            return -1;
-        }
-        function getRow(posY, grid) {
-            if (posY < 0)
-                return i;
-            for (var i = 0, enumerator = grid.RowDefinitions.GetEnumerator(); posY > 0 && enumerator.MoveNext(); i++) {
-                posY -= enumerator.Current.ActualHeight;
-                if (posY < 0)
-                    return i;
-            }
-            return -1;
-        }
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
@@ -337,6 +380,10 @@ var Fayde;
                 _super.apply(this, arguments);
                 this._CellContainers = [];
                 this._Columns = [];
+                this.CellClicked = new Fayde.RoutedEvent();
+                this.CellMouseEnter = new Fayde.RoutedEvent();
+                this.CellMouseLeave = new Fayde.RoutedEvent();
+                this._EditIndex = -1;
             }
             GridItemsPresenter.prototype.CreateNode = function () {
                 return new GridItemsPresenterNode(this);
@@ -357,8 +404,19 @@ var Fayde;
                 configurable: true
             });
 
+            GridItemsPresenter.prototype.OnCellMouseLeftButtonDown = function (sender, e) {
+                this.CellClicked.Raise(this, new Experimental.CellMouseButtonEventArgs(sender, e));
+            };
+
+            GridItemsPresenter.prototype.OnCellMouseEnter = function (sender, e) {
+                this.CellMouseEnter.Raise(this, new Experimental.CellMouseEventArgs(sender, e));
+            };
+
+            GridItemsPresenter.prototype.OnCellMouseLeave = function (sender, e) {
+                this.CellMouseLeave.Raise(this, new Experimental.CellMouseEventArgs(sender, e));
+            };
+
             GridItemsPresenter.prototype.OnColumnAdded = function (index, newColumn) {
-                //TODO: Handle multiple columns
                 var cols = this._Columns;
                 cols.splice(index, 0, newColumn);
 
@@ -374,7 +432,7 @@ var Fayde;
                 for (var i = 0, containers = this._CellContainers, len = containers.length, items = gic.Items, children = grid.Children; i < len; i++) {
                     var item = items[i];
                     var container = newColumn.GetContainerForCell(item);
-                    newColumn.PrepareContainerForCell(container, item);
+                    this._PrepareContainer(newColumn, container, item);
                     containers[i].splice(index, 0, container);
                     Grid.SetRow(container, i);
                     children.Insert(i * cols.length + index, container);
@@ -387,7 +445,6 @@ var Fayde;
                 }
             };
             GridItemsPresenter.prototype.OnColumnRemoved = function (index) {
-                //TODO: Handle multiple columns
                 var cols = this._Columns;
                 var col = cols[index];
 
@@ -396,7 +453,7 @@ var Fayde;
                 if (gic && grid) {
                     for (var items = gic.Items, containers = this._CellContainers, i = containers.length - 1; i >= 0; i--) {
                         var container = containers[i][index];
-                        col.ClearContainerForCell(container, items[i]);
+                        this._ClearContainer(col, container, items[i]);
                         grid.Children.Remove(container);
 
                         var cells = containers[i];
@@ -423,7 +480,7 @@ var Fayde;
                     for (var containers = this._CellContainers, i = containers.length - 1; i >= 0; i--) {
                         for (var j = cols.length - 1; j >= 0; j--) {
                             var container = containers[i][j];
-                            cols[j].ClearContainerForCell(container, items[i]);
+                            this._ClearContainer(cols[j], container, items[i]);
                             grid.Children.Remove(container);
                         }
                     }
@@ -443,7 +500,7 @@ var Fayde;
                 if (colindex < 0)
                     return;
                 for (var i = 0, containers = this._CellContainers, items = gic.Items, len = containers.length; i < len; i++) {
-                    col.PrepareContainerForCell(containers[i][colindex], items[i]);
+                    this._PrepareContainer(col, containers[i][colindex], items[i]);
                 }
             };
 
@@ -458,7 +515,6 @@ var Fayde;
                 var cols = this._Columns;
                 var children = grid.Children;
 
-                //Insert row definitions
                 var rowdefs = grid.RowDefinitions;
                 for (var i = 0, len = newItems.length; i < len; i++) {
                     var rowdef = new RowDefinition();
@@ -472,7 +528,7 @@ var Fayde;
                         var item = items[index + i];
                         var col = cols[j];
                         var container = col.GetContainerForCell(item);
-                        col.PrepareContainerForCell(container, item);
+                        this._PrepareContainer(col, container, item);
                         newrow.push(container);
                         Grid.SetRow(container, index + i);
                         Grid.SetColumn(container, j);
@@ -495,14 +551,13 @@ var Fayde;
                 var containers = this._CellContainers;
                 var cols = this._Columns;
 
-                // Remove cell containers from _CellContainers
                 var oldRowContainers = containers.splice(index, oldItems.length);
 
                 for (var i = 0, len = oldItems.length; i < len; i++) {
                     var oldrow = oldRowContainers[i];
                     for (var j = 0; j < oldrow.length; j++) {
                         var cell = oldrow[j];
-                        cols[j].ClearContainerForCell(cell, oldItems[i]);
+                        this._ClearContainer(cols[j], cell, oldItems[i]);
                         grid.Children.Remove(cell);
                     }
                 }
@@ -514,10 +569,41 @@ var Fayde;
                     }
                 }
 
-                //Remove excessive row definitions
                 var rowdefs = grid.RowDefinitions;
                 for (var i = 0, len = oldItems.length; i < len; i++) {
                     rowdefs.RemoveAt(index);
+                }
+            };
+
+            GridItemsPresenter.prototype._PrepareContainer = function (col, container, item) {
+                col.PrepareContainerForCell(container, item);
+                if (container instanceof Fayde.Controls.Control)
+                    container.Background = new Fayde.Media.SolidColorBrush(Color.KnownColors.Transparent);
+                container.MouseLeftButtonDown.Subscribe(this.OnCellMouseLeftButtonDown, this);
+                container.MouseEnter.Subscribe(this.OnCellMouseEnter, this);
+                container.MouseLeave.Subscribe(this.OnCellMouseLeave, this);
+            };
+            GridItemsPresenter.prototype._ClearContainer = function (col, container, item) {
+                container.MouseLeave.Unsubscribe(this.OnCellMouseLeave, this);
+                container.MouseEnter.Unsubscribe(this.OnCellMouseEnter, this);
+                container.MouseLeftButtonDown.Unsubscribe(this.OnCellMouseLeftButtonDown, this);
+                col.ClearContainerForCell(container, item);
+            };
+
+            GridItemsPresenter.prototype.OnEditingItemChanged = function (item, index) {
+                var oldRow = this._EditIndex > -1 ? this._CellContainers[this._EditIndex] : null;
+                for (var i = 0, len = oldRow ? oldRow.length : 0; i < len; i++) {
+                    var container = oldRow[i];
+                    if (container instanceof Experimental.GridCell)
+                        container.IsEditing = false;
+                }
+
+                this._EditIndex = index;
+                var newRow = this._EditIndex > -1 ? this._CellContainers[this._EditIndex] : null;
+                for (var i = 0, len = newRow ? newRow.length : 0; i < len; i++) {
+                    var container = newRow[i];
+                    if (container instanceof Experimental.GridCell)
+                        container.IsEditing = true;
                 }
             };
             return GridItemsPresenter;
@@ -589,7 +675,6 @@ var Fayde;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-/// <reference path="Internal/ItemChangedCollection.ts" />
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
@@ -718,7 +803,6 @@ var Fayde;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-/// <reference path="GridColumn.ts" />
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
@@ -763,7 +847,6 @@ var Fayde;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-/// <reference path="GridColumn.ts" />
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
@@ -802,7 +885,6 @@ var Fayde;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-/// <reference path="Internal/ItemChangedCollection.ts" />
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
@@ -1205,7 +1287,6 @@ var Fayde;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-/// <reference path="../Internal/ItemChangedCollection.ts" />
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
@@ -1236,7 +1317,6 @@ var Fayde;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-/// <reference path="Primitives/GridAdorner.ts" />
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
@@ -1250,10 +1330,10 @@ var Fayde;
                 this._HoverRow = -1;
                 this._Element = null;
                 this._ForegroundElement = null;
-                this._InGrid = false;
             }
             HoveredRowAdorner.prototype.CreateBackgroundElement = function () {
                 var el = new Border();
+                el.IsHitTestVisible = false;
 
                 var binding = new Fayde.Data.Binding("Background");
                 binding.Source = this;
@@ -1277,6 +1357,7 @@ var Fayde;
             };
             HoveredRowAdorner.prototype.CreateForegroundElement = function () {
                 var el = new Border();
+                el.IsHitTestVisible = false;
                 el.Background = new Fayde.Media.SolidColorBrush(Color.KnownColors.Transparent);
 
                 var binding = new Fayde.Data.Binding("Cursor");
@@ -1290,40 +1371,34 @@ var Fayde;
 
             HoveredRowAdorner.prototype.OnAttached = function (gic) {
                 _super.prototype.OnAttached.call(this, gic);
-                var grid = gic.ItemsPresenter.Panel;
+                var presenter = gic.ItemsPresenter;
+                presenter.CellMouseEnter.Subscribe(this._CellMouseEnter, this);
+                presenter.CellMouseLeave.Subscribe(this._CellMouseLeave, this);
+
+                var grid = presenter.Panel;
                 grid.Children.Add(this._Element = this.CreateBackgroundElement());
                 Grid.SetColumnSpan(this._Element, grid.ColumnDefinitions.Count);
                 grid.Children.Add(this._ForegroundElement = this.CreateForegroundElement());
                 Grid.SetColumnSpan(this._ForegroundElement, grid.ColumnDefinitions.Count);
-                grid.MouseMove.Subscribe(this._MouseMove, this);
-                grid.MouseEnter.Subscribe(this._MouseEnter, this);
-                grid.MouseLeave.Subscribe(this._MouseLeave, this);
+
                 this.OnHoverRowChanged(-1, -1);
             };
             HoveredRowAdorner.prototype.OnDetached = function (gic) {
                 _super.prototype.OnDetached.call(this, gic);
-                var grid = gic.ItemsPresenter.Panel;
-                grid.MouseMove.Unsubscribe(this._MouseMove, this);
-                grid.MouseEnter.Unsubscribe(this._MouseEnter, this);
-                grid.MouseLeave.Unsubscribe(this._MouseLeave, this);
+                var presenter = gic.ItemsPresenter;
+                presenter.CellMouseEnter.Unsubscribe(this._CellMouseEnter, this);
+                presenter.CellMouseLeave.Unsubscribe(this._CellMouseLeave, this);
+
+                var grid = presenter.Panel;
                 grid.Children.Remove(this._Element);
                 grid.Children.Remove(this._ForegroundElement);
                 this._Element = null;
                 this._ForegroundElement = null;
             };
-            HoveredRowAdorner.prototype._MouseMove = function (sender, e) {
-                var grid = sender;
-                var pos = e.GetPosition(grid);
-                this._SetHoverRow(isInGrid(pos.X, grid) ? getRow(pos.Y, grid) : -1);
+            HoveredRowAdorner.prototype._CellMouseEnter = function (sender, e) {
+                this._SetHoverRow(Grid.GetRow(e.Cell));
             };
-            HoveredRowAdorner.prototype._MouseEnter = function (sender, e) {
-                this._InGrid = true;
-                var grid = sender;
-                var pos = e.GetPosition(grid);
-                this._SetHoverRow(isInGrid(pos.X, grid) ? getRow(pos.Y, grid) : -1);
-            };
-            HoveredRowAdorner.prototype._MouseLeave = function (sender, e) {
-                this._InGrid = false;
+            HoveredRowAdorner.prototype._CellMouseLeave = function (sender, e) {
                 this._SetHoverRow(-1);
             };
             HoveredRowAdorner.prototype._SetHoverRow = function (row) {
@@ -1363,31 +1438,9 @@ var Fayde;
             return HoveredRowAdorner;
         })(Experimental.Primitives.GridAdorner);
         Experimental.HoveredRowAdorner = HoveredRowAdorner;
-
-        function isInGrid(posX, grid) {
-            if (posX < 0 || posX >= grid.ActualWidth)
-                return false;
-            for (var enumerator = grid.ColumnDefinitions.GetEnumerator(); enumerator.MoveNext();) {
-                posX -= enumerator.Current.ActualWidth;
-                if (posX < 0)
-                    return true;
-            }
-            return false;
-        }
-        function getRow(posY, grid) {
-            if (posY < 0)
-                return i;
-            for (var i = 0, enumerator = grid.RowDefinitions.GetEnumerator(); posY > 0 && enumerator.MoveNext(); i++) {
-                posY -= enumerator.Current.ActualHeight;
-                if (posY < 0)
-                    return i;
-            }
-            return -1;
-        }
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-/// <reference path="Primitives/GridAdorner.ts" />
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
@@ -1402,6 +1455,7 @@ var Fayde;
             }
             SelectedRowAdorner.prototype.CreateElement = function () {
                 var el = new Border();
+                el.IsHitTestVisible = false;
 
                 var binding = new Fayde.Data.Binding("Background");
                 binding.Source = this;
@@ -1489,4 +1543,49 @@ var Fayde;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
-//# sourceMappingURL=Fayde.Experimental.js.map
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var EditingChangedEventArgs = (function (_super) {
+            __extends(EditingChangedEventArgs, _super);
+            function EditingChangedEventArgs(item, row) {
+                _super.call(this);
+                Object.defineProperty(this, "Item", { value: item, writable: false });
+                Object.defineProperty(this, "Row", { value: row, writable: false });
+            }
+            return EditingChangedEventArgs;
+        })(EventArgs);
+        Experimental.EditingChangedEventArgs = EditingChangedEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var CellMouseButtonEventArgs = (function (_super) {
+            __extends(CellMouseButtonEventArgs, _super);
+            function CellMouseButtonEventArgs(cell, args) {
+                _super.call(this, args.AbsolutePos);
+                Object.defineProperty(this, "Cell", { value: cell, writable: false });
+            }
+            return CellMouseButtonEventArgs;
+        })(Fayde.Input.MouseButtonEventArgs);
+        Experimental.CellMouseButtonEventArgs = CellMouseButtonEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var CellMouseEventArgs = (function (_super) {
+            __extends(CellMouseEventArgs, _super);
+            function CellMouseEventArgs(cell, args) {
+                _super.call(this, args.AbsolutePos);
+                Object.defineProperty(this, "Cell", { value: cell, writable: false });
+            }
+            return CellMouseEventArgs;
+        })(Fayde.Input.MouseEventArgs);
+        Experimental.CellMouseEventArgs = CellMouseEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));

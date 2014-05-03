@@ -49,6 +49,19 @@ module Fayde.Experimental {
         private _CellContainers: UIElement[][] = []; //[row][col]
         private _Columns: GridColumn[] = [];
 
+        CellClicked = new RoutedEvent<CellMouseButtonEventArgs>();
+        OnCellMouseLeftButtonDown(sender: any, e: Input.MouseButtonEventArgs) {
+            this.CellClicked.Raise(this, new CellMouseButtonEventArgs(sender, e));
+        }
+        CellMouseEnter = new RoutedEvent<CellMouseEventArgs>();
+        OnCellMouseEnter(sender: any, e: Input.MouseEventArgs) {
+            this.CellMouseEnter.Raise(this, new CellMouseEventArgs(sender, e));
+        }
+        CellMouseLeave = new RoutedEvent<CellMouseEventArgs>();
+        OnCellMouseLeave(sender: any, e: Input.MouseEventArgs) {
+            this.CellMouseLeave.Raise(this, new CellMouseEventArgs(sender, e));
+        }
+
         OnColumnAdded(index: number, newColumn: GridColumn) {
             //TODO: Handle multiple columns
             var cols = this._Columns;
@@ -67,7 +80,7 @@ module Fayde.Experimental {
             for (var i = 0, containers = this._CellContainers, len = containers.length, items = gic.Items, children = grid.Children; i < len; i++) {
                 var item = items[i];
                 var container = newColumn.GetContainerForCell(item);
-                newColumn.PrepareContainerForCell(container, item);
+                this._PrepareContainer(newColumn, container, item);
                 containers[i].splice(index, 0, container);
                 Grid.SetRow(container, i);
                 children.Insert(i * cols.length + index, container);
@@ -91,7 +104,7 @@ module Fayde.Experimental {
                 //Clear containers
                 for (var items = gic.Items, containers = this._CellContainers, i = containers.length - 1; i >= 0; i--) {
                     var container = containers[i][index];
-                    col.ClearContainerForCell(container, items[i]);
+                    this._ClearContainer(col, container, items[i]);
                     grid.Children.Remove(container);
 
                     var cells = containers[i];
@@ -118,7 +131,7 @@ module Fayde.Experimental {
                 for (var containers = this._CellContainers, i = containers.length - 1; i >= 0; i--) {
                     for (var j = cols.length - 1; j >= 0; j--) {
                         var container = containers[i][j];
-                        cols[j].ClearContainerForCell(container, items[i]);
+                        this._ClearContainer(cols[j], container, items[i]);
                         grid.Children.Remove(container);
                     }
                 }
@@ -138,7 +151,7 @@ module Fayde.Experimental {
             if (colindex < 0)
                 return;
             for (var i = 0, containers = this._CellContainers, items = gic.Items, len = containers.length; i < len; i++) {
-                col.PrepareContainerForCell(containers[i][colindex], items[i]);
+                this._PrepareContainer(col, containers[i][colindex], items[i]);
             }
         }
 
@@ -168,7 +181,7 @@ module Fayde.Experimental {
                     var item = items[index + i];
                     var col = cols[j];
                     var container = col.GetContainerForCell(item);
-                    col.PrepareContainerForCell(container, item);
+                    this._PrepareContainer(col, container, item);
                     newrow.push(container);
                     Grid.SetRow(container, index + i);
                     Grid.SetColumn(container, j);
@@ -200,7 +213,7 @@ module Fayde.Experimental {
                 var oldrow = oldRowContainers[i];
                 for (var j = 0; j < oldrow.length; j++) {
                     var cell = oldrow[j];
-                    cols[j].ClearContainerForCell(cell, oldItems[i]);
+                    this._ClearContainer(cols[j], cell, oldItems[i]);
                     grid.Children.Remove(cell);
                 }
             }
@@ -220,10 +233,25 @@ module Fayde.Experimental {
             }
         }
 
+        private _PrepareContainer(col: GridColumn, container: UIElement, item: any) {
+            col.PrepareContainerForCell(container, item);
+            if (container instanceof Controls.Control)
+                (<Controls.ContentControl>container).Background = new Media.SolidColorBrush(Color.KnownColors.Transparent);
+            container.MouseLeftButtonDown.Subscribe(this.OnCellMouseLeftButtonDown, this);
+            container.MouseEnter.Subscribe(this.OnCellMouseEnter, this);
+            container.MouseLeave.Subscribe(this.OnCellMouseLeave, this);
+        }
+        private _ClearContainer(col: GridColumn, container: UIElement, item: any) {
+            container.MouseLeave.Unsubscribe(this.OnCellMouseLeave, this);
+            container.MouseEnter.Unsubscribe(this.OnCellMouseEnter, this);
+            container.MouseLeftButtonDown.Unsubscribe(this.OnCellMouseLeftButtonDown, this);
+            col.ClearContainerForCell(container, item);
+        }
+
         private _EditIndex: number = -1;
         OnEditingItemChanged(item: any, index: number) {
             var oldRow = this._EditIndex > -1 ? this._CellContainers[this._EditIndex] : null;
-            for (var i = 0; i < oldRow.length; i++) {
+            for (var i = 0, len = oldRow ? oldRow.length : 0; i < len; i++) {
                 var container = oldRow[i];
                 if (container instanceof GridCell)
                     (<GridCell>container).IsEditing = false;
@@ -231,8 +259,8 @@ module Fayde.Experimental {
 
             this._EditIndex = index;
             var newRow = this._EditIndex > -1 ? this._CellContainers[this._EditIndex] : null;
-            for (var i = 0; i < newRow.length; i++) {
-                var container = oldRow[i];
+            for (var i = 0, len = newRow ? newRow.length : 0; i < len; i++) {
+                var container = newRow[i];
                 if (container instanceof GridCell)
                     (<GridCell>container).IsEditing = true;
             }

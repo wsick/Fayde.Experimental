@@ -7,34 +7,46 @@ declare module Fayde.Experimental {
         private _CreatorListeners;
         public ListenForPresenterCreated(func: (presenter: GridItemsPresenter) => void): void;
         public OnPresenterCreated(): void;
-        private InitSelection(grid);
-        private _MouseLeftButtonDown(sender, e);
+        private _CellClicked(sender, e);
+        private InitSelection(presenter);
     }
     class GridItemsControl extends Controls.Control {
         public XamlNode: GridItemsControlNode;
         public CreateNode(): GridItemsControlNode;
+        public IsItemsControl : boolean;
         public ItemsPresenter : GridItemsPresenter;
         static ItemsSourceProperty: DependencyProperty;
         static ColumnsProperty: ImmutableDependencyProperty<GridColumnCollection>;
         static AdornersProperty: ImmutableDependencyProperty<Primitives.GridAdornerCollection>;
         static SelectedItemProperty: DependencyProperty;
         static SelectedRowProperty: DependencyProperty;
+        static EditingItemProperty: DependencyProperty;
+        static EditingRowProperty: DependencyProperty;
         public ItemsSource: IEnumerable<any>;
         public Columns: GridColumnCollection;
         public Adorners: Primitives.GridAdornerCollection;
         public SelectedItem: any;
         public SelectedRow: number;
+        public EditingItem: any;
+        public EditingRow: number;
         public SelectionChanged: MulticastEvent<SelectionChangedEventArgs>;
         public OnSelectionChanged(): void;
+        public EditingChanged: MulticastEvent<EditingChangedEventArgs>;
+        public OnEditingChanged(): void;
         public OnItemsSourceChanged(oldItemsSource: IEnumerable<any>, newItemsSource: IEnumerable<any>): void;
         private _OnItemsSourceUpdated(sender, e);
-        private _IsCoercing;
+        private _IsCoercingSel;
         public OnSelectedItemChanged(oldItem: any, newItem: any): void;
         public OnSelectedRowChanged(oldRow: number, newRow: number): void;
+        private _IsCoercingEdit;
+        public OnEditingItemChanged(oldItem: any, newItem: any): void;
+        public OnEditingRowChanged(oldRow: number, newRow: number): void;
+        private _EditCommand;
         private _Items;
         public Items : any[];
         private _AddItems(index, newItems);
         private _RemoveItems(index, oldItems);
+        public EditCommand : MVVM.RelayCommand;
         constructor();
         public OnItemsAdded(index: number, newItems: any[]): void;
         public OnItemsRemoved(index: number, oldItems: any[]): void;
@@ -59,12 +71,22 @@ declare module Fayde.Experimental {
         public Panel : Controls.Grid;
         private _CellContainers;
         private _Columns;
+        public CellClicked: RoutedEvent<CellMouseButtonEventArgs>;
+        public OnCellMouseLeftButtonDown(sender: any, e: Input.MouseButtonEventArgs): void;
+        public CellMouseEnter: RoutedEvent<CellMouseEventArgs>;
+        public OnCellMouseEnter(sender: any, e: Input.MouseEventArgs): void;
+        public CellMouseLeave: RoutedEvent<CellMouseEventArgs>;
+        public OnCellMouseLeave(sender: any, e: Input.MouseEventArgs): void;
         public OnColumnAdded(index: number, newColumn: GridColumn): void;
         public OnColumnRemoved(index: number): void;
         public OnColumnsCleared(): void;
         public OnColumnChanged(col: GridColumn): void;
         public OnItemsAdded(index: number, newItems: any[]): void;
         public OnItemsRemoved(index: number, oldItems: any[]): void;
+        private _PrepareContainer(col, container, item);
+        private _ClearContainer(col, container, item);
+        private _EditIndex;
+        public OnEditingItemChanged(item: any, index: number): void;
     }
 }
 declare module Fayde.Experimental {
@@ -243,14 +265,12 @@ declare module Fayde.Experimental {
         private _HoverRow;
         private _Element;
         private _ForegroundElement;
-        private _InGrid;
         public CreateBackgroundElement(): UIElement;
         public CreateForegroundElement(): UIElement;
         public OnAttached(gic: GridItemsControl): void;
         public OnDetached(gic: GridItemsControl): void;
-        private _MouseMove(sender, e);
-        private _MouseEnter(sender, e);
-        private _MouseLeave(sender, e);
+        private _CellMouseEnter(sender, e);
+        private _CellMouseLeave(sender, e);
         private _SetHoverRow(row);
         public OnHoverRowChanged(oldRow: number, newRow: number): void;
     }
@@ -280,5 +300,24 @@ declare module Fayde.Experimental {
         public Item: any;
         public Row: number;
         constructor(item: any, row: number);
+    }
+}
+declare module Fayde.Experimental {
+    class EditingChangedEventArgs extends EventArgs {
+        public Item: any;
+        public Row: number;
+        constructor(item: any, row: number);
+    }
+}
+declare module Fayde.Experimental {
+    class CellMouseButtonEventArgs extends Input.MouseButtonEventArgs {
+        public Cell: UIElement;
+        constructor(cell: UIElement, args: Input.MouseButtonEventArgs);
+    }
+}
+declare module Fayde.Experimental {
+    class CellMouseEventArgs extends Input.MouseEventArgs {
+        public Cell: UIElement;
+        constructor(cell: UIElement, args: Input.MouseEventArgs);
     }
 }

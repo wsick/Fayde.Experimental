@@ -1,6 +1,3 @@
-/// <reference path="../lib/qunit/qunit.d.ts" />
-/// <reference path="../lib/Fayde/Fayde.d.ts" />
-/// <reference path="../../Fayde.Experimental/Fayde.Experimental.d.ts" />
 define(["require", "exports"], function(require, exports) {
     var Grid = Fayde.Controls.Grid;
     var GridItemsControl = Fayde.Experimental.GridItemsControl;
@@ -59,14 +56,12 @@ define(["require", "exports"], function(require, exports) {
             strictEqual(grid.RowDefinitions.Count, 4);
             strictEqual(grid.Children.Count, 8);
 
-            //Add column
             gic.Columns.Insert(1, createTextColumn("Extra"));
             strictEqual(grid.ColumnDefinitions.Count, 3);
             strictEqual(grid.Children.Count, 12);
             ok(verifyColumns(grid, 4, 3), "cols");
             ok(verifyRows(grid, 4, 3), "rows");
 
-            //Remove column
             gic.Columns.RemoveAt(1);
             strictEqual(grid.ColumnDefinitions.Count, 2);
             strictEqual(grid.Children.Count, 8);
@@ -93,14 +88,12 @@ define(["require", "exports"], function(require, exports) {
 
             var newItem = { Name: "Name2", Description: "Description 2" };
 
-            //Add item
             mock1.Insert(newItem, 1);
             strictEqual(grid.RowDefinitions.Count, 5);
             strictEqual(grid.Children.Count, 10);
             ok(verifyColumns(grid, 5, 2), "cols");
             ok(verifyRows(grid, 5, 2), "rows");
 
-            //Remove item
             mock1.Remove(newItem);
             strictEqual(grid.RowDefinitions.Count, 4);
             strictEqual(grid.Children.Count, 8);
@@ -110,4 +103,3 @@ define(["require", "exports"], function(require, exports) {
     }
     exports.run = run;
 });
-//# sourceMappingURL=GridItemsControlTests.js.map

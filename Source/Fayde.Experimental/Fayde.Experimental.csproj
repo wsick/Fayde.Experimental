@@ -92,10 +92,15 @@
     <TypeScriptCompile Include="HoveredRowAdorner.ts" />
     <TypeScriptCompile Include="SelectedRowAdorner.ts" />
     <TypeScriptCompile Include="SelectionChangedEventArgs.ts" />
+    <TypeScriptCompile Include="EditingChangedEventArgs.ts" />
+    <TypeScriptCompile Include="CellMouseButtonEventArgs.ts" />
+    <TypeScriptCompile Include="CellMouseEventArgs.ts" />
     <Content Include="Themes\Metro.theme.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Themes\Default.theme.xml" />
+    <Content Include="Themes\Default.theme.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="packages\Fayde.0.9.8.19\build\Fayde.targets" Condition="Exists('packages\Fayde.0.9.8.19\build\Fayde.targets')" />

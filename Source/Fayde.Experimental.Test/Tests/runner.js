@@ -7,4 +7,3 @@ define(["require", "exports", "Tests/GridItemsControlTests"], function(require, 
     }
     exports.run = run;
 });
-//# sourceMappingURL=runner.js.map

@@ -20,6 +20,7 @@ module Fayde.Experimental {
 
         CreateElement(): UIElement {
             var el = new Border();
+            el.IsHitTestVisible = false;
 
             var binding = new Data.Binding("Background");
             binding.Source = this;

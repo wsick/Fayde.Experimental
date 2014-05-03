@@ -19,10 +19,10 @@ module Fayde.Experimental {
         private _HoverRow: number = -1;
         private _Element: UIElement = null;
         private _ForegroundElement: UIElement = null;
-        private _InGrid: boolean = false;
 
         CreateBackgroundElement(): UIElement {
             var el = new Border();
+            el.IsHitTestVisible = false;
             
             var binding = new Data.Binding("Background");
             binding.Source = this;
@@ -46,6 +46,7 @@ module Fayde.Experimental {
         }
         CreateForegroundElement(): UIElement {
             var el = new Border();
+            el.IsHitTestVisible = false;
             el.Background = new Fayde.Media.SolidColorBrush(Color.KnownColors.Transparent);
             
             var binding = new Data.Binding("Cursor");
@@ -59,40 +60,34 @@ module Fayde.Experimental {
 
         OnAttached(gic: GridItemsControl) {
             super.OnAttached(gic);
-            var grid = gic.ItemsPresenter.Panel;
+            var presenter = gic.ItemsPresenter;
+            presenter.CellMouseEnter.Subscribe(this._CellMouseEnter, this);
+            presenter.CellMouseLeave.Subscribe(this._CellMouseLeave, this);
+
+            var grid = presenter.Panel;
             grid.Children.Add(this._Element = this.CreateBackgroundElement());
             Grid.SetColumnSpan(this._Element, grid.ColumnDefinitions.Count);
             grid.Children.Add(this._ForegroundElement = this.CreateForegroundElement());
             Grid.SetColumnSpan(this._ForegroundElement, grid.ColumnDefinitions.Count);
-            grid.MouseMove.Subscribe(this._MouseMove, this);
-            grid.MouseEnter.Subscribe(this._MouseEnter, this);
-            grid.MouseLeave.Subscribe(this._MouseLeave, this);
+
             this.OnHoverRowChanged(-1, -1);
         }
         OnDetached(gic: GridItemsControl) {
             super.OnDetached(gic);
-            var grid = gic.ItemsPresenter.Panel;
-            grid.MouseMove.Unsubscribe(this._MouseMove, this);
-            grid.MouseEnter.Unsubscribe(this._MouseEnter, this);
-            grid.MouseLeave.Unsubscribe(this._MouseLeave, this);
+            var presenter = gic.ItemsPresenter;
+            presenter.CellMouseEnter.Unsubscribe(this._CellMouseEnter, this);
+            presenter.CellMouseLeave.Unsubscribe(this._CellMouseLeave, this);
+
+            var grid = presenter.Panel;
             grid.Children.Remove(this._Element);
             grid.Children.Remove(this._ForegroundElement);
             this._Element = null;
             this._ForegroundElement = null;
         }
-        private _MouseMove(sender: any, e: Input.MouseEventArgs) {
-            var grid = <Grid>sender;
-            var pos = e.GetPosition(grid);
-            this._SetHoverRow(isInGrid(pos.X, grid) ? getRow(pos.Y, grid) : -1);
+        private _CellMouseEnter(sender: any, e: CellMouseEventArgs) {
+            this._SetHoverRow(Grid.GetRow(e.Cell));
         }
-        private _MouseEnter(sender: any, e: Input.MouseEventArgs) {
-            this._InGrid = true;
-            var grid = <Grid>sender;
-            var pos = e.GetPosition(grid);
-            this._SetHoverRow(isInGrid(pos.X, grid) ? getRow(pos.Y, grid) : -1);
-        }
-        private _MouseLeave(sender: any, e: Input.MouseEventArgs) {
-            this._InGrid = false;
+        private _CellMouseLeave(sender: any, e: CellMouseEventArgs) {
             this._SetHoverRow(-1);
         }
         private _SetHoverRow(row: number) {
@@ -114,26 +109,5 @@ module Fayde.Experimental {
                 Grid.SetRow(fel, newRow > -1 ? newRow : 0);
             }
         }
-    }
-
-    function isInGrid(posX: number, grid: Grid): boolean {
-        if (posX < 0 || posX >= grid.ActualWidth)
-            return false;
-        for (var enumerator = grid.ColumnDefinitions.GetEnumerator(); enumerator.MoveNext();) {
-            posX -= enumerator.Current.ActualWidth;
-            if (posX < 0)
-                return true;
-        }
-        return false;
-    }
-    function getRow(posY: number, grid: Grid): number {
-        if (posY < 0)
-            return i;
-        for (var i = 0, enumerator = grid.RowDefinitions.GetEnumerator(); posY > 0 && enumerator.MoveNext(); i++) {
-            posY -= enumerator.Current.ActualHeight;
-            if (posY < 0)
-                return i;
-        }
-        return -1;
     }
 }

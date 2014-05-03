@@ -34,7 +34,7 @@ module Fayde.Experimental {
             }
             this._CreatorListeners = null;
 
-            this.InitSelection(presenter.Panel);
+            this.InitSelection(presenter);
 
             var gic = this.XObject;
             for (var i = 0, adorners = gic.Adorners.ToArray(), len = adorners.length; i < len; i++) {
@@ -42,16 +42,15 @@ module Fayde.Experimental {
             }
         }
 
-        private InitSelection(grid: Grid) {
-            grid.MouseLeftButtonDown.Subscribe(this._MouseLeftButtonDown, this);
-        }
-        private _MouseLeftButtonDown(sender: any, e: Input.MouseButtonEventArgs) {
-            var grid = <Grid>sender;
-            var pos = e.GetPosition(grid);
-            var col = getCol(pos.X, grid);
-            var row = getRow(pos.Y, grid);
+        private _CellClicked(sender: any, e: CellMouseButtonEventArgs) {
+            var row = Grid.GetRow(e.Cell);
+            var col = Grid.GetColumn(e.Cell);
             var xobj = this.XObject;
             xobj.SetCurrentValue(GridItemsControl.SelectedRowProperty, row);
+        }
+
+        private InitSelection(presenter: GridItemsPresenter) {
+            presenter.CellClicked.Subscribe(this._CellClicked, this);
         }
     }
 
@@ -185,11 +184,13 @@ module Fayde.Experimental {
             this.OnItemsRemoved(index, oldItems);
         }
 
+        get EditCommand(): MVVM.RelayCommand { return this._EditCommand; }
+
         constructor() {
             super();
             this.DefaultStyleKey = (<any>this).constructor;
 
-            this._EditCommand = new MVVM.RelayCommand(parameter => this.EditingItem = parameter);
+            this._EditCommand = new MVVM.RelayCommand((args: IEventBindingArgs<Input.MouseButtonEventArgs>) => this.EditingItem = args.parameter);
 
             var cols = GridItemsControl.ColumnsProperty.Initialize(this);
             cols.CollectionChanged.Subscribe(this._ColumnsChanged, this);
@@ -272,25 +273,4 @@ module Fayde.Experimental {
         }
     }
     Xaml.Content(GridItemsControl, GridItemsControl.ColumnsProperty);
-    
-    function getCol(posX: number, grid: Grid): number {
-        if (posX < 0)
-            return i;
-        for (var i = 0, enumerator = grid.ColumnDefinitions.GetEnumerator(); posX > 0 && enumerator.MoveNext(); i++) {
-            posX -= enumerator.Current.ActualWidth;
-            if (posX < 0)
-                return i;
-        }
-        return -1;
-    }
-    function getRow(posY: number, grid: Grid): number {
-        if (posY < 0)
-            return i;
-        for (var i = 0, enumerator = grid.RowDefinitions.GetEnumerator(); posY > 0 && enumerator.MoveNext(); i++) {
-            posY -= enumerator.Current.ActualHeight;
-            if (posY < 0)
-                return i;
-        }
-        return -1;
-    }
 }
