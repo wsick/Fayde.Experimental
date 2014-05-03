@@ -59,6 +59,8 @@ module Fayde.Experimental {
         XamlNode: GridItemsControlNode;
         CreateNode(): GridItemsControlNode { return new GridItemsControlNode(this); }
 
+        get IsItemsControl(): boolean { return true; }
+
         get ItemsPresenter(): GridItemsPresenter { return this.XamlNode.ItemsPresenter; }
 
         static ItemsSourceProperty = DependencyProperty.Register("ItemsSource", () => IEnumerable_, GridItemsControl, null, (d, args) => (<GridItemsControl>d).OnItemsSourceChanged(args.OldValue, args.NewValue));
@@ -66,15 +68,27 @@ module Fayde.Experimental {
         static AdornersProperty = DependencyProperty.RegisterImmutable<Primitives.GridAdornerCollection>("Adorners", () => Primitives.GridAdornerCollection, GridItemsControl);
         static SelectedItemProperty = DependencyProperty.Register("SelectedItem", () => Object, GridItemsControl, undefined, (d, args) => (<GridItemsControl>d).OnSelectedItemChanged(args.OldValue, args.NewValue));
         static SelectedRowProperty = DependencyProperty.Register("SelectedRow", () => Number, GridItemsControl, -1, (d, args) => (<GridItemsControl>d).OnSelectedRowChanged(args.OldValue, args.NewValue));
+        static EditingItemProperty = DependencyProperty.Register("EditingItem", () => Object, GridItemsControl, undefined, (d, args) => (<GridItemsControl>d).OnEditingItemChanged(args.OldValue, args.NewValue));
+        static EditingRowProperty = DependencyProperty.Register("EditingRow", () => Number, GridItemsControl, -1, (d, args) => (<GridItemsControl>d).OnEditingRowChanged(args.OldValue, args.NewValue));
         ItemsSource: IEnumerable<any>;
         Columns: GridColumnCollection;
         Adorners: Primitives.GridAdornerCollection;
         SelectedItem: any;
         SelectedRow: number;
+        EditingItem: any;
+        EditingRow: number;
 
         SelectionChanged = new MulticastEvent<SelectionChangedEventArgs>();
         OnSelectionChanged() {
             this.SelectionChanged.Raise(this, new SelectionChangedEventArgs(this.SelectedItem, this.SelectedRow));
+        }
+
+        EditingChanged = new MulticastEvent<EditingChangedEventArgs>();
+        OnEditingChanged() {
+            var item = this.EditingItem;
+            var row = this.EditingRow;
+            this.ItemsPresenter.OnEditingItemChanged(item, row);
+            this.EditingChanged.Raise(this, new EditingChangedEventArgs(item, row));
         }
 
         OnItemsSourceChanged(oldItemsSource: IEnumerable<any>, newItemsSource: IEnumerable<any>) {
@@ -107,29 +121,55 @@ module Fayde.Experimental {
             }
         }
 
-        private _IsCoercing = false;
+        private _IsCoercingSel = false;
         OnSelectedItemChanged(oldItem: any, newItem: any) {
-            if (this._IsCoercing)
+            if (this._IsCoercingSel)
                 return;
             try {
-                this._IsCoercing = true;
+                this._IsCoercingSel = true;
                 this.SetCurrentValue(GridItemsControl.SelectedRowProperty, this._Items.indexOf(newItem));
             } finally {
-                this._IsCoercing = false;
+                this._IsCoercingSel = false;
             }
             this.OnSelectionChanged();
         }
         OnSelectedRowChanged(oldRow: number, newRow: number) {
-            if (this._IsCoercing)
+            if (this._IsCoercingSel)
                 return;
             try {
-                this._IsCoercing = true;
+                this._IsCoercingSel = true;
                 this.SetCurrentValue(GridItemsControl.SelectedItemProperty, (newRow > -1 && newRow < this._Items.length) ? this._Items[newRow] : undefined);
             } finally {
-                this._IsCoercing = false;
+                this._IsCoercingSel = false;
             }
             this.OnSelectionChanged();
         }
+
+        private _IsCoercingEdit = false;
+        OnEditingItemChanged(oldItem: any, newItem: any) {
+            if (this._IsCoercingEdit)
+                return;
+            try {
+                this._IsCoercingEdit = true;
+                this.SetCurrentValue(GridItemsControl.EditingRowProperty, this._Items.indexOf(newItem));
+            } finally {
+                this._IsCoercingEdit = false;
+            }
+            this.OnEditingChanged();
+        }
+        OnEditingRowChanged(oldRow: number, newRow: number) {
+            if (this._IsCoercingEdit)
+                return;
+            try {
+                this._IsCoercingEdit = true;
+                this.SetCurrentValue(GridItemsControl.EditingItemProperty, (newRow > -1 && newRow < this._Items.length) ? this._Items[newRow] : undefined);
+            } finally {
+                this._IsCoercingEdit = false;
+            }
+            this.OnEditingChanged();
+        }
+        
+        private _EditCommand: MVVM.RelayCommand;
 
         private _Items: any[] = [];
         get Items(): any[] { return this._Items; }
@@ -148,6 +188,8 @@ module Fayde.Experimental {
         constructor() {
             super();
             this.DefaultStyleKey = (<any>this).constructor;
+
+            this._EditCommand = new MVVM.RelayCommand(parameter => this.EditingItem = parameter);
 
             var cols = GridItemsControl.ColumnsProperty.Initialize(this);
             cols.CollectionChanged.Subscribe(this._ColumnsChanged, this);

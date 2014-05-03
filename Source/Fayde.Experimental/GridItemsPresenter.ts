@@ -219,5 +219,23 @@ module Fayde.Experimental {
                 rowdefs.RemoveAt(index);
             }
         }
+
+        private _EditIndex: number = -1;
+        OnEditingItemChanged(item: any, index: number) {
+            var oldRow = this._EditIndex > -1 ? this._CellContainers[this._EditIndex] : null;
+            for (var i = 0; i < oldRow.length; i++) {
+                var container = oldRow[i];
+                if (container instanceof GridCell)
+                    (<GridCell>container).IsEditing = false;
+            }
+
+            this._EditIndex = index;
+            var newRow = this._EditIndex > -1 ? this._CellContainers[this._EditIndex] : null;
+            for (var i = 0; i < newRow.length; i++) {
+                var container = oldRow[i];
+                if (container instanceof GridCell)
+                    (<GridCell>container).IsEditing = true;
+            }
+        }
     }
 }
