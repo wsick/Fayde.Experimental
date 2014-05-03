@@ -2848,6 +2848,14 @@ var Fayde;
             return new Fayde.LayoutUpdater(uin);
         };
 
+        Object.defineProperty(UIElement.prototype, "IsItemsControl", {
+            get: function () {
+                return false;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
         Object.defineProperty(UIElement.prototype, "VisualParent", {
             get: function () {
                 var vpNode = this.XamlNode.VisualParentNode;
@@ -5992,8 +6000,8 @@ var Fayde;
                     if (!!e.NewValue)
                         return;
                     this._DoWithSuspend(function () {
-                        _this.SetValueInternal(ButtonBase.IsFocusedProperty, false);
-                        _this.SetValueInternal(ButtonBase.IsPressedProperty, false);
+                        _this.SetCurrentValue(ButtonBase.IsFocusedProperty, false);
+                        _this.SetCurrentValue(ButtonBase.IsPressedProperty, false);
                         _this._IsMouseCaptured = false;
                         _this._IsSpaceKeyDown = false;
                         _this._IsMouseLeftButtonDown = false;
@@ -6008,7 +6016,7 @@ var Fayde;
                         return;
 
                     this._DoWithSuspend(function () {
-                        _this.SetValueInternal(ButtonBase.IsPressedProperty, true);
+                        _this.SetCurrentValue(ButtonBase.IsPressedProperty, true);
                         _this.OnClick();
                     });
                 };
@@ -6021,7 +6029,7 @@ var Fayde;
                         return;
 
                     this._DoWithSuspend(function () {
-                        _this.SetValueInternal(ButtonBase.IsPressedProperty, false);
+                        _this.SetCurrentValue(ButtonBase.IsPressedProperty, false);
                     });
                 };
                 ButtonBase.prototype.OnMouseMove = function (e) {
@@ -6030,7 +6038,7 @@ var Fayde;
                     this._MousePosition = e.GetPosition(this);
 
                     if (this._IsMouseLeftButtonDown && this.IsEnabled && this.ClickMode !== 2 /* Hover */ && this._IsMouseCaptured && !this._IsSpaceKeyDown) {
-                        this.SetValueInternal(ButtonBase.IsPressedProperty, this._IsValidMousePosition());
+                        this.SetCurrentValue(ButtonBase.IsPressedProperty, this._IsValidMousePosition());
                     }
                 };
                 ButtonBase.prototype.OnMouseLeftButtonDown = function (e) {
@@ -6049,7 +6057,7 @@ var Fayde;
                         _this.Focus();
                         _this._CaptureMouseInternal();
                         if (_this._IsMouseCaptured)
-                            _this.SetValueInternal(ButtonBase.IsPressedProperty, true);
+                            _this.SetCurrentValue(ButtonBase.IsPressedProperty, true);
                     });
 
                     if (clickMode === 1 /* Press */)
@@ -6071,25 +6079,25 @@ var Fayde;
 
                     if (!this._IsSpaceKeyDown) {
                         this._ReleaseMouseCaptureInternal();
-                        this.SetValueInternal(ButtonBase.IsPressedProperty, false);
+                        this.SetCurrentValue(ButtonBase.IsPressedProperty, false);
                     }
                 };
 
                 ButtonBase.prototype.OnGotFocus = function (e) {
                     _super.prototype.OnGotFocus.call(this, e);
-                    this.SetValueInternal(ButtonBase.IsFocusedProperty, true);
+                    this.SetCurrentValue(ButtonBase.IsFocusedProperty, true);
                     this.UpdateVisualState();
                 };
                 ButtonBase.prototype.OnLostFocus = function (e) {
                     var _this = this;
                     _super.prototype.OnLostFocus.call(this, e);
-                    this.SetValueInternal(ButtonBase.IsFocusedProperty, false);
+                    this.SetCurrentValue(ButtonBase.IsFocusedProperty, false);
 
                     if (this.ClickMode === 2 /* Hover */)
                         return;
 
                     this._DoWithSuspend(function () {
-                        _this.SetValueInternal(ButtonBase.IsPressedProperty, false);
+                        _this.SetCurrentValue(ButtonBase.IsPressedProperty, false);
                         _this._ReleaseMouseCaptureInternal();
                         _this._IsSpaceKeyDown = false;
                     });
@@ -7059,6 +7067,14 @@ var Fayde;
                 return new ItemsControlNode(this);
             };
 
+            Object.defineProperty(ItemsControl.prototype, "IsItemsControl", {
+                get: function () {
+                    return true;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             ItemsControl.GetIsItemsHost = function (d) {
                 return d.GetValue(ItemsControl.IsItemsHostProperty) === true;
             };
@@ -7850,6 +7866,8 @@ var Fayde;
                     return resolution.Type;
                 } else if (propd === Fayde.Setter.PropertyProperty) {
                     var ownerStyle = findOwnerStyle();
+                    if (!(ownerStyle.TargetType))
+                        throw new XamlParseException("Style must have a TargetType.");
                     return resolveDependencyProperty(value, ownerStyle.TargetType, attr);
                 }
                 if (tt === String)
@@ -8228,6 +8246,7 @@ var Fayde;
                 var content = xobj.Content;
                 if (content instanceof Fayde.UIElement) {
                     this._ContentRoot = content;
+                    xobj.DataContext = undefined;
                 } else {
                     xobj.DataContext = content == null ? null : content;
                     this._ContentRoot = this._GetContentTemplate(content ? content.constructor : null).GetVisualTree(xobj);
@@ -17701,6 +17720,8 @@ var Fayde;
                         return target.TemplateOwner;
                     case 3 /* FindAncestor */:
                         return findAncestor(target, binding.RelativeSource);
+                    case 4 /* ItemsControlParent */:
+                        return findItemsControlAncestor(target, binding.RelativeSource);
                 }
             }
         }
@@ -17732,6 +17753,16 @@ var Fayde;
         }
         for (var parent = Fayde.VisualTreeHelper.GetParent(target); parent != null; parent = Fayde.VisualTreeHelper.GetParent(parent)) {
             if (parent instanceof ancestorType && --ancestorLevel < 1)
+                return parent;
+        }
+    }
+    function findItemsControlAncestor(target, relSource) {
+        if (!(target instanceof Fayde.DependencyObject))
+            return;
+        var ancestorLevel = relSource.AncestorLevel;
+        ancestorLevel = ancestorLevel || 1; //NOTE: Will coerce 0 to 1 also
+        for (var parent = Fayde.VisualTreeHelper.GetParent(target); parent != null; parent = Fayde.VisualTreeHelper.GetParent(parent)) {
+            if (!!parent.IsItemsControl && --ancestorLevel < 1)
                 return parent;
         }
     }
@@ -18431,12 +18462,13 @@ var Fayde;
         };
 
         Style.prototype.Validate = function (instance, error) {
+            var targetType = this.TargetType;
             var parentType = instance.constructor;
 
             if (this._IsSealed) {
-                if (!(instance instanceof this.TargetType)) {
+                if (!(instance instanceof targetType)) {
                     error.Number = BError.XamlParse;
-                    error.Message = "Style.TargetType (" + this.TargetType.name + ") is not a subclass of (" + parentType.name + ")";
+                    error.Message = "Style.TargetType (" + targetType.name + ") is not a subclass of (" + parentType.name + ")";
                     return false;
                 }
                 return true;
@@ -19591,6 +19623,8 @@ var Fayde;
                             return this.Target.TemplateOwner;
                         case 3 /* FindAncestor */:
                             return findAncestor(this.Target, rs);
+                        case 4 /* ItemsControlParent */:
+                            return findItemsControlAncestor(this.Target, rs);
                     }
                 }
                 return this._DataContext;
@@ -19868,6 +19902,16 @@ var Fayde;
                     return parent;
             }
         }
+        function findItemsControlAncestor(target, relSource) {
+            if (!(target instanceof Fayde.DependencyObject))
+                return;
+            var ancestorLevel = relSource.AncestorLevel;
+            ancestorLevel = ancestorLevel || 1; //NOTE: Will coerce 0 to 1 also
+            for (var parent = Fayde.VisualTreeHelper.GetParent(target); parent != null; parent = Fayde.VisualTreeHelper.GetParent(parent)) {
+                if (!!parent.IsItemsControl && --ancestorLevel < 1)
+                    return parent;
+            }
+        }
     })(Fayde.Data || (Fayde.Data = {}));
     var Data = Fayde.Data;
 })(Fayde || (Fayde = {}));
@@ -19916,6 +19960,7 @@ var Fayde;
             RelativeSourceMode[RelativeSourceMode["TemplatedParent"] = 1] = "TemplatedParent";
             RelativeSourceMode[RelativeSourceMode["Self"] = 2] = "Self";
             RelativeSourceMode[RelativeSourceMode["FindAncestor"] = 3] = "FindAncestor";
+            RelativeSourceMode[RelativeSourceMode["ItemsControlParent"] = 4] = "ItemsControlParent";
         })(Data.RelativeSourceMode || (Data.RelativeSourceMode = {}));
         var RelativeSourceMode = Data.RelativeSourceMode;
         Fayde.RegisterEnum(RelativeSourceMode, "RelativeSourceMode", Fayde.XMLNS);
@@ -30230,6 +30275,252 @@ Fayde.RegisterTypeConverter(CornerRadius, function (val) {
     return new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
 });
 /// <reference path="../Runtime/TypeManagement.ts" />
+var TimeSpan = (function () {
+    function TimeSpan() {
+        var args = [];
+        for (var _i = 0; _i < (arguments.length - 0); _i++) {
+            args[_i] = arguments[_i + 0];
+        }
+        this._Ticks = 0;
+        if (args.length === 0)
+            return;
+        if (args.length === 1) {
+            this._Ticks = args[0] || 0;
+            return;
+        }
+        var days = 0;
+        var hours = 0;
+        var minutes = 0;
+        var seconds = 0;
+        var milliseconds = 0;
+
+        if (args.length === 3) {
+            hours = args[0] || 0;
+            minutes = args[1] || 0;
+            seconds = args[2] || 0;
+        } else {
+            days = args[0] || 0;
+            hours = args[1] || 0;
+            minutes = args[2] || 0;
+            seconds = args[3] || 0;
+            milliseconds = args[4] || 0;
+        }
+
+        this._Ticks = (days * TimeSpan._TicksPerDay) + (hours * TimeSpan._TicksPerHour) + (minutes * TimeSpan._TicksPerMinute) + (seconds * TimeSpan._TicksPerSecond) + (milliseconds * TimeSpan._TicksPerMillisecond);
+    }
+    Object.defineProperty(TimeSpan, "Zero", {
+        get: function () {
+            return new TimeSpan();
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan, "MinValue", {
+        get: function () {
+            return new TimeSpan(Number.MIN_VALUE);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan, "MaxValue", {
+        get: function () {
+            return new TimeSpan(Number.MAX_VALUE);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(TimeSpan.prototype, "Days", {
+        get: function () {
+            return this._Ticks > 0 ? Math.floor(this._Ticks / TimeSpan._TicksPerDay) : Math.ceil(this._Ticks / TimeSpan._TicksPerDay);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "Hours", {
+        get: function () {
+            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
+            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerHour) : Math.ceil(remTicks / TimeSpan._TicksPerHour);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "Minutes", {
+        get: function () {
+            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
+            remTicks = remTicks % TimeSpan._TicksPerHour;
+            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerMinute) : Math.ceil(remTicks / TimeSpan._TicksPerMinute);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "Seconds", {
+        get: function () {
+            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
+            remTicks = remTicks % TimeSpan._TicksPerHour;
+            remTicks = remTicks % TimeSpan._TicksPerMinute;
+            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerSecond) : Math.ceil(remTicks / TimeSpan._TicksPerSecond);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "Milliseconds", {
+        get: function () {
+            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
+            remTicks = remTicks % TimeSpan._TicksPerHour;
+            remTicks = remTicks % TimeSpan._TicksPerMinute;
+            remTicks = remTicks % TimeSpan._TicksPerSecond;
+            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerMillisecond) : Math.ceil(remTicks / TimeSpan._TicksPerMillisecond);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "Ticks", {
+        get: function () {
+            return this._Ticks;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(TimeSpan.prototype, "TotalDays", {
+        get: function () {
+            return this._Ticks / TimeSpan._TicksPerDay;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "TotalHours", {
+        get: function () {
+            return this._Ticks / TimeSpan._TicksPerHour;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "TotalMinutes", {
+        get: function () {
+            return this._Ticks / TimeSpan._TicksPerMinute;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "TotalSeconds", {
+        get: function () {
+            return this._Ticks / TimeSpan._TicksPerSecond;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TimeSpan.prototype, "TotalMilliseconds", {
+        get: function () {
+            return this._Ticks / TimeSpan._TicksPerMillisecond;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    TimeSpan.prototype.AddTicks = function (ticks) {
+        if (ticks == null)
+            return;
+        if (isNaN(ticks))
+            return;
+        this._Ticks += ticks;
+    };
+    TimeSpan.prototype.AddMilliseconds = function (milliseconds) {
+        this.AddTicks(milliseconds * TimeSpan._TicksPerMillisecond);
+    };
+
+    TimeSpan.prototype.Add = function (ts2) {
+        var ts = new TimeSpan();
+        ts._Ticks = this._Ticks + ts2._Ticks;
+        return ts;
+    };
+    TimeSpan.prototype.Subtract = function (ts2) {
+        var ts = new TimeSpan();
+        ts._Ticks = this._Ticks - ts2._Ticks;
+        return ts;
+    };
+    TimeSpan.prototype.Multiply = function (v) {
+        var ts = new TimeSpan();
+        ts._Ticks = Math.round(this._Ticks * v);
+        return ts;
+    };
+    TimeSpan.prototype.Divide = function (ts2) {
+        var ts = new TimeSpan();
+        ts._Ticks = this._Ticks / ts2._Ticks;
+        return ts;
+    };
+    TimeSpan.prototype.CompareTo = function (ts2) {
+        if (this._Ticks === ts2._Ticks)
+            return 0;
+        return (this._Ticks > ts2._Ticks) ? 1 : -1;
+    };
+    TimeSpan.prototype.IsZero = function () {
+        return this._Ticks === 0;
+    };
+
+    TimeSpan.prototype.GetJsDelay = function () {
+        return this._Ticks * TimeSpan._TicksPerMillisecond;
+    };
+
+    TimeSpan.prototype.toString = function (format) {
+        if (!format)
+            return Fayde.Localization.FormatSingle(this, "c");
+        return Fayde.Localization.FormatSingle(this, format);
+    };
+    TimeSpan._TicksPerMillisecond = 1;
+    TimeSpan._TicksPerSecond = 1000;
+    TimeSpan._TicksPerMinute = TimeSpan._TicksPerSecond * 60;
+    TimeSpan._TicksPerHour = TimeSpan._TicksPerMinute * 60;
+    TimeSpan._TicksPerDay = TimeSpan._TicksPerHour * 24;
+    return TimeSpan;
+})();
+Fayde.RegisterType(TimeSpan, "window", Fayde.XMLNSX);
+
+Fayde.RegisterTypeConverter(TimeSpan, function (val) {
+    if (val instanceof TimeSpan)
+        return val;
+    if (typeof val === "number")
+        return new TimeSpan(val);
+    val = val.toString();
+
+    var tokens = val.split(":");
+    if (tokens.length === 1) {
+        var ticks = parseFloat(val);
+        if (!isNaN(ticks))
+            return new TimeSpan(ticks);
+        throw new Exception("Invalid TimeSpan format '" + val + "'.");
+    }
+
+    if (tokens.length !== 3)
+        throw new Exception("Invalid TimeSpan format '" + val + "'.");
+
+    /// [days.]hours:minutes:seconds[.fractionalSeconds]
+    var days = 0;
+    var hours;
+    var minutes;
+    var seconds;
+    var milliseconds = 0;
+
+    var daysplit = tokens[0].split(".");
+    if (daysplit.length === 2) {
+        days = parseInt(daysplit[0]);
+        hours = parseInt(daysplit[1]);
+    } else if (daysplit.length === 1) {
+        hours = parseInt(daysplit[0]);
+    }
+
+    minutes = parseInt(tokens[1]);
+
+    seconds = parseFloat(tokens[2]);
+    milliseconds = seconds % 1;
+    seconds = seconds - milliseconds;
+    milliseconds *= 1000.0;
+
+    return new TimeSpan(days, hours, minutes, seconds, milliseconds);
+});
+/// <reference path="../Runtime/TypeManagement.ts" />
+/// <reference path="TimeSpan.ts" />
 var DayOfWeek;
 (function (DayOfWeek) {
     DayOfWeek[DayOfWeek["Sunday"] = 0] = "Sunday";
@@ -30381,12 +30672,15 @@ var DateTime = (function () {
     });
     Object.defineProperty(DateTime.prototype, "Date", {
         get: function () {
-            var d = new Date(this._InternalDate.getTime());
+            var t = this._InternalDate.getTime();
+            if (t <= DateTime._MinDateTicks)
+                return new DateTime(DateTime._MinDateTicks, this.Kind);
+            var d = new Date(t);
             d.setHours(0);
             d.setMinutes(0);
             d.setSeconds(0);
             d.setMilliseconds(0);
-            return new DateTime(d.getTime());
+            return new DateTime(d.getTime(), this.Kind);
         },
         enumerable: true,
         configurable: true
@@ -30491,6 +30785,7 @@ var DateTime = (function () {
             return Fayde.Localization.FormatSingle(this, "s");
         return Fayde.Localization.FormatSingle(this, format);
     };
+    DateTime._MinDateTicks = -8640000000000000 + (TimeSpan._TicksPerHour * 4);
     return DateTime;
 })();
 Fayde.RegisterType(DateTime, "Fayde", Fayde.XMLNS);
@@ -31926,251 +32221,6 @@ Fayde.RegisterTypeConverter(Thickness, function (val) {
         throw new Exception("Cannot parse Thickness value '" + val + "'");
     }
     return new Thickness(left, top, right, bottom);
-});
-/// <reference path="../Runtime/TypeManagement.ts" />
-var TimeSpan = (function () {
-    function TimeSpan() {
-        var args = [];
-        for (var _i = 0; _i < (arguments.length - 0); _i++) {
-            args[_i] = arguments[_i + 0];
-        }
-        this._Ticks = 0;
-        if (args.length === 0)
-            return;
-        if (args.length === 1) {
-            this._Ticks = args[0] || 0;
-            return;
-        }
-        var days = 0;
-        var hours = 0;
-        var minutes = 0;
-        var seconds = 0;
-        var milliseconds = 0;
-
-        if (args.length === 3) {
-            hours = args[0] || 0;
-            minutes = args[1] || 0;
-            seconds = args[2] || 0;
-        } else {
-            days = args[0] || 0;
-            hours = args[1] || 0;
-            minutes = args[2] || 0;
-            seconds = args[3] || 0;
-            milliseconds = args[4] || 0;
-        }
-
-        this._Ticks = (days * TimeSpan._TicksPerDay) + (hours * TimeSpan._TicksPerHour) + (minutes * TimeSpan._TicksPerMinute) + (seconds * TimeSpan._TicksPerSecond) + (milliseconds * TimeSpan._TicksPerMillisecond);
-    }
-    Object.defineProperty(TimeSpan, "Zero", {
-        get: function () {
-            return new TimeSpan();
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan, "MinValue", {
-        get: function () {
-            return new TimeSpan(Number.MIN_VALUE);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan, "MaxValue", {
-        get: function () {
-            return new TimeSpan(Number.MAX_VALUE);
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    Object.defineProperty(TimeSpan.prototype, "Days", {
-        get: function () {
-            return this._Ticks > 0 ? Math.floor(this._Ticks / TimeSpan._TicksPerDay) : Math.ceil(this._Ticks / TimeSpan._TicksPerDay);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "Hours", {
-        get: function () {
-            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
-            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerHour) : Math.ceil(remTicks / TimeSpan._TicksPerHour);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "Minutes", {
-        get: function () {
-            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
-            remTicks = remTicks % TimeSpan._TicksPerHour;
-            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerMinute) : Math.ceil(remTicks / TimeSpan._TicksPerMinute);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "Seconds", {
-        get: function () {
-            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
-            remTicks = remTicks % TimeSpan._TicksPerHour;
-            remTicks = remTicks % TimeSpan._TicksPerMinute;
-            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerSecond) : Math.ceil(remTicks / TimeSpan._TicksPerSecond);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "Milliseconds", {
-        get: function () {
-            var remTicks = this._Ticks % TimeSpan._TicksPerDay;
-            remTicks = remTicks % TimeSpan._TicksPerHour;
-            remTicks = remTicks % TimeSpan._TicksPerMinute;
-            remTicks = remTicks % TimeSpan._TicksPerSecond;
-            return remTicks > 0 ? Math.floor(remTicks / TimeSpan._TicksPerMillisecond) : Math.ceil(remTicks / TimeSpan._TicksPerMillisecond);
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "Ticks", {
-        get: function () {
-            return this._Ticks;
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    Object.defineProperty(TimeSpan.prototype, "TotalDays", {
-        get: function () {
-            return this._Ticks / TimeSpan._TicksPerDay;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "TotalHours", {
-        get: function () {
-            return this._Ticks / TimeSpan._TicksPerHour;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "TotalMinutes", {
-        get: function () {
-            return this._Ticks / TimeSpan._TicksPerMinute;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "TotalSeconds", {
-        get: function () {
-            return this._Ticks / TimeSpan._TicksPerSecond;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TimeSpan.prototype, "TotalMilliseconds", {
-        get: function () {
-            return this._Ticks / TimeSpan._TicksPerMillisecond;
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    TimeSpan.prototype.AddTicks = function (ticks) {
-        if (ticks == null)
-            return;
-        if (isNaN(ticks))
-            return;
-        this._Ticks += ticks;
-    };
-    TimeSpan.prototype.AddMilliseconds = function (milliseconds) {
-        this.AddTicks(milliseconds * TimeSpan._TicksPerMillisecond);
-    };
-
-    TimeSpan.prototype.Add = function (ts2) {
-        var ts = new TimeSpan();
-        ts._Ticks = this._Ticks + ts2._Ticks;
-        return ts;
-    };
-    TimeSpan.prototype.Subtract = function (ts2) {
-        var ts = new TimeSpan();
-        ts._Ticks = this._Ticks - ts2._Ticks;
-        return ts;
-    };
-    TimeSpan.prototype.Multiply = function (v) {
-        var ts = new TimeSpan();
-        ts._Ticks = Math.round(this._Ticks * v);
-        return ts;
-    };
-    TimeSpan.prototype.Divide = function (ts2) {
-        var ts = new TimeSpan();
-        ts._Ticks = this._Ticks / ts2._Ticks;
-        return ts;
-    };
-    TimeSpan.prototype.CompareTo = function (ts2) {
-        if (this._Ticks === ts2._Ticks)
-            return 0;
-        return (this._Ticks > ts2._Ticks) ? 1 : -1;
-    };
-    TimeSpan.prototype.IsZero = function () {
-        return this._Ticks === 0;
-    };
-
-    TimeSpan.prototype.GetJsDelay = function () {
-        return this._Ticks * TimeSpan._TicksPerMillisecond;
-    };
-
-    TimeSpan.prototype.toString = function (format) {
-        if (!format)
-            return Fayde.Localization.FormatSingle(this, "c");
-        return Fayde.Localization.FormatSingle(this, format);
-    };
-    TimeSpan._TicksPerMillisecond = 1;
-    TimeSpan._TicksPerSecond = 1000;
-    TimeSpan._TicksPerMinute = TimeSpan._TicksPerSecond * 60;
-    TimeSpan._TicksPerHour = TimeSpan._TicksPerMinute * 60;
-    TimeSpan._TicksPerDay = TimeSpan._TicksPerHour * 24;
-    return TimeSpan;
-})();
-Fayde.RegisterType(TimeSpan, "window", Fayde.XMLNSX);
-
-Fayde.RegisterTypeConverter(TimeSpan, function (val) {
-    if (val instanceof TimeSpan)
-        return val;
-    if (typeof val === "number")
-        return new TimeSpan(val);
-    val = val.toString();
-
-    var tokens = val.split(":");
-    if (tokens.length === 1) {
-        var ticks = parseFloat(val);
-        if (!isNaN(ticks))
-            return new TimeSpan(ticks);
-        throw new Exception("Invalid TimeSpan format '" + val + "'.");
-    }
-
-    if (tokens.length !== 3)
-        throw new Exception("Invalid TimeSpan format '" + val + "'.");
-
-    /// [days.]hours:minutes:seconds[.fractionalSeconds]
-    var days = 0;
-    var hours;
-    var minutes;
-    var seconds;
-    var milliseconds = 0;
-
-    var daysplit = tokens[0].split(".");
-    if (daysplit.length === 2) {
-        days = parseInt(daysplit[0]);
-        hours = parseInt(daysplit[1]);
-    } else if (daysplit.length === 1) {
-        hours = parseInt(daysplit[0]);
-    }
-
-    minutes = parseInt(tokens[1]);
-
-    seconds = parseFloat(tokens[2]);
-    milliseconds = seconds % 1;
-    seconds = seconds - milliseconds;
-    milliseconds *= 1000.0;
-
-    return new TimeSpan(days, hours, minutes, seconds, milliseconds);
 });
 /// <reference path="../Runtime/TypeManagement.ts" />
 var BError = (function () {
@@ -38597,7 +38647,7 @@ var Fayde;
                             if (index1 < length && format.charCodeAt(index1) === 125)
                                 ++index1;
                             else
-                                formatError();
+                                throw formatError();
                         }
                         if (ch === 123) {
                             if (index1 >= length || format.charCodeAt(index1) !== 123)
@@ -38605,22 +38655,24 @@ var Fayde;
                             else {
                                 breakout = true;
                                 ++index1;
+                                break;
                             }
                         } else {
                             _this.push(String.fromCharCode(ch));
                             breakout = true;
+                            break;
                         }
                     }
                     if (index1 != length) {
                         var index2 = index1 + 1;
                         if (index2 === length || (ch = format.charCodeAt(index2)) < 48 || ch > 57)
-                            formatError();
+                            throw formatError();
                         var index3 = 0;
                         do {
                             index3 = index3 * 10 + ch - 48;
                             ++index2;
                             if (index2 == length)
-                                formatError();
+                                throw formatError();
                             ch = format.charCodeAt(index2);
                         } while(ch >= 48 && ch <= 57 && index3 < 1000000);
                         if (index3 >= args.length)
@@ -38634,22 +38686,22 @@ var Fayde;
                             while (index2 < length && format.charCodeAt(index2) === 32)
                                 ++index2;
                             if (index2 == length)
-                                formatError();
+                                throw formatError();
                             ch = format.charCodeAt(index2);
                             if (ch === 45) {
                                 flag = true;
                                 ++index2;
                                 if (index2 == length)
-                                    formatError();
+                                    throw formatError();
                                 ch = format.charCodeAt(index2);
                             }
                             if (ch < 48 || ch > 57)
-                                formatError();
+                                throw formatError();
                             do {
                                 num = num * 10 + ch - 48;
                                 ++index2;
                                 if (index2 == length)
-                                    formatError();
+                                    throw formatError();
                                 ch = format.charCodeAt(index2);
                             } while(ch >= 48 && ch <= 57 && num < 1000000);
                         }
@@ -38661,14 +38713,14 @@ var Fayde;
                             var index4 = index2 + 1;
                             while (true) {
                                 if (index4 === length)
-                                    formatError();
+                                    throw formatError();
                                 ch = format.charCodeAt(index4);
                                 ++index4;
                                 if (ch === 123) {
                                     if (index4 < length && format.charCodeAt(index4) === 123)
                                         ++index4;
                                     else
-                                        formatError();
+                                        throw formatError();
                                 } else if (ch === 125) {
                                     if (index4 < length && format.charCodeAt(index4) === 125)
                                         ++index4;
@@ -38681,7 +38733,7 @@ var Fayde;
                             index2 = index4 - 1;
                         }
                         if (ch !== 125)
-                            formatError();
+                            throw formatError();
                         index1 = index2 + 1;
                         var str = formatItem(obj, stringBuilder, provider) || "";
                         repeatCount = num - str.length;
@@ -38709,7 +38761,7 @@ var Fayde;
             if (str == null) {
                 if (format1 == null && stringBuilder != null)
                     format1 = stringBuilderToString(stringBuilder);
-                var formatted = doFormattable(obj, format1, provider);
+                var formatted = format1 == null ? (obj == null ? "" : obj.toString()) : doFormattable(obj, format1, provider);
                 if (formatted !== undefined)
                     str = formatted;
             }
