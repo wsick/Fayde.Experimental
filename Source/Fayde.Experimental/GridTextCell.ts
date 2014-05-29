@@ -47,7 +47,7 @@
             }
 
             if (this._Editor) {
-                if (!!path)
+                if (!path)
                     throw new ArgumentException("DisplayMemberPath cannot be null for editable GridTextCell");
                 binding = new Data.Binding(path);
                 binding.UpdateSourceTrigger = Data.UpdateSourceTrigger.PropertyChanged;
