@@ -9,11 +9,6 @@
             this.UpdateDisplayMember();
         }
 
-        OnIsEditingChanged(oldIsEditing: boolean, newIsEditing: boolean) {
-            super.OnIsEditingChanged(oldIsEditing, newIsEditing);
-            this.UpdateVisualState();
-        }
-
         private _Presenter: TextBlock = null;
         private _Editor: TextBox = null;
 
@@ -27,15 +22,6 @@
             this._Presenter = <TextBlock>this.GetTemplateChild("PresentingTextBlock", TextBlock);
             this._Editor = <TextBox>this.GetTemplateChild("EditingTextBox", TextBox);
             this.UpdateDisplayMember();
-            this.UpdateVisualState();
-        }
-
-        GoToStates(gotoFunc: (state: string) => boolean) {
-            super.GoToStates(gotoFunc);
-            this.GoToStateEditing(gotoFunc);
-        }
-        GoToStateEditing(gotoFunc: (state: string) => boolean): boolean {
-            return gotoFunc(this.IsEditing ? "Edit" : "Display");
         }
 
         private UpdateDisplayMember() {
@@ -56,9 +42,6 @@
             }
         }
     }
-    Fayde.Controls.TemplateVisualStates(GridTextCell,
-        { GroupName: "EditStates", Name: "Display" },
-        { GroupName: "EditStates", Name: "Edit" });
     Fayde.Controls.TemplateParts(GridTextCell, 
         { Name: "PresentingTextBlock", Type: TextBlock },
         { Name: "EditingTextBox", Type: TextBox });

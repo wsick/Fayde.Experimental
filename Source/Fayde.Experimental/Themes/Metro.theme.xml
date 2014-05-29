@@ -50,7 +50,26 @@
             <Setter.Value>
                 <ControlTemplate TargetType="exp:GridCell">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-                        <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ActiveTemplate}" Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <vsm:VisualStateManager.VisualStateGroups>
+                            <vsm:VisualStateGroup x:Name="EditStates">
+                                <vsm:VisualState x:Name="Display" />
+                                <vsm:VisualState x:Name="Edit">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="0" Storyboard.TargetName="DisplayPresenter" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="1" Storyboard.TargetName="EditPresenter" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </vsm:VisualState>
+                                <vsm:VisualState x:Name="NotEditable" />
+                            </vsm:VisualStateGroup>
+                        </vsm:VisualStateManager.VisualStateGroups>
+                        <Grid Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <ContentPresenter x:Name="DisplayPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            <ContentPresenter x:Name="EditPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding EditTemplate}" Visibility="Collapsed" />
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
@@ -60,22 +79,27 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="exp:GridTextCell">
-                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                            DataContext="{TemplateBinding Content}">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                         <vsm:VisualStateManager.VisualStateGroups>
                             <vsm:VisualStateGroup x:Name="EditStates">
                                 <vsm:VisualState x:Name="Display" />
                                 <vsm:VisualState x:Name="Edit">
                                     <Storyboard>
-                                        <DoubleAnimation Duration="0" To="0" Storyboard.TargetName="PresentingTextBlock" Storyboard.TargetProperty="Opacity" />
-                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetName="EditingTextBox" Storyboard.TargetProperty="Opacity" />
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="0" Storyboard.TargetName="PresentingTextBlock" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="1" Storyboard.TargetName="EditingTextBox" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                                        </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </vsm:VisualState>
+                                <vsm:VisualState x:Name="NotEditable" />
                             </vsm:VisualStateGroup>
                         </vsm:VisualStateManager.VisualStateGroups>
-                        <Grid Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                        <Grid Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              DataContext="{TemplateBinding Content}">
                             <TextBlock x:Name="PresentingTextBlock" />
-                            <TextBox x:Name="EditingTextBox" />
+                            <TextBox x:Name="EditingTextBox" Visibility="Collapsed" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

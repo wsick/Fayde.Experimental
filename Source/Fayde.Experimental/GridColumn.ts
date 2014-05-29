@@ -34,7 +34,17 @@ module Fayde.Experimental {
             if (cell instanceof ContentControl) {
                 binding = new Data.Binding("Source");
                 binding.Source = this;
-                binding.FallbackValue = item;
+                //TODO: Use FallbackValue when fixed
+                binding.Converter = {
+                    Convert: (value: any, targetType: IType, parameter: any, culture: any): any => {
+                        if (value === undefined)
+                            return item;
+                        return value;
+                    },
+                    ConvertBack: (value: any, targetType: IType, parameter: any, culture: any): any => {
+                        return value;
+                    }
+                };
                 cell.SetBinding(ContentControl.ContentProperty, binding);
             }
         }

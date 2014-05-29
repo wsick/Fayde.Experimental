@@ -33,27 +33,27 @@
                 -->
             </exp:GridItemsControl.Adorners>
             <exp:GridTemplateColumn>
-                <exp:GridTemplateColumn.CellTemplate>
+                <exp:GridTemplateColumn.DisplayTemplate>
                     <DataTemplate>
                         <Button Content="Delete" Click="{EventBinding Command={Binding DataContext.RemoveItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type exp:GridItemsControl}}}, CommandParameter={Binding}}" />
                     </DataTemplate>
-                </exp:GridTemplateColumn.CellTemplate>
+                </exp:GridTemplateColumn.DisplayTemplate>
             </exp:GridTemplateColumn>
             <exp:GridTemplateColumn>
-                <exp:GridTemplateColumn.CellTemplate>
+                <exp:GridTemplateColumn.DisplayTemplate>
                     <DataTemplate>
-                        <Button Content="Edit" MouseLeftButtonDown="{EventBinding Command={Binding Path=EditCommand, RelativeSource={RelativeSource ItemsControlParent}}, CommandParameter={Binding}}" />
+                        <Button Content="Edit" MouseLeftButtonDown="{EventBinding Command={Binding Path=ToggleEditCommand, RelativeSource={RelativeSource ItemsControlParent}}, CommandParameter={Binding}}" />
                     </DataTemplate>
-                </exp:GridTemplateColumn.CellTemplate>
+                </exp:GridTemplateColumn.DisplayTemplate>
             </exp:GridTemplateColumn>
             <exp:GridTextColumn DisplayMemberPath="FirstName" CellStyle="{StaticResource GridCellStyle}" />
-            <exp:GridTextColumn DisplayMemberPath="LastName" />
-            <exp:GridTemplateColumn>
-                <exp:GridTemplateColumn.CellTemplate>
+            <exp:GridTextColumn DisplayMemberPath="LastName" IsEditable="true" />
+            <exp:GridTemplateColumn IsEditable="true">
+                <exp:GridTemplateColumn.DisplayTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Age}" />
                     </DataTemplate>
-                </exp:GridTemplateColumn.CellTemplate>
+                </exp:GridTemplateColumn.DisplayTemplate>
                 <exp:GridTemplateColumn.EditTemplate>
                     <DataTemplate>
                         <TextBox Text="{Binding Age, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />

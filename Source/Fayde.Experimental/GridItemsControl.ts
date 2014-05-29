@@ -168,7 +168,7 @@ module Fayde.Experimental {
             this.OnEditingChanged();
         }
         
-        private _EditCommand: MVVM.RelayCommand;
+        private _ToggleEditCommand: MVVM.RelayCommand;
 
         private _Items: any[] = [];
         get Items(): any[] { return this._Items; }
@@ -184,13 +184,13 @@ module Fayde.Experimental {
             this.OnItemsRemoved(index, oldItems);
         }
 
-        get EditCommand(): MVVM.RelayCommand { return this._EditCommand; }
+        get ToggleEditCommand(): MVVM.RelayCommand { return this._ToggleEditCommand; }
 
         constructor() {
             super();
             this.DefaultStyleKey = (<any>this).constructor;
 
-            this._EditCommand = new MVVM.RelayCommand((args: IEventBindingArgs<Input.MouseButtonEventArgs>) => this.EditingItem = args.parameter);
+            this._ToggleEditCommand = new MVVM.RelayCommand((args: IEventBindingArgs<Input.MouseButtonEventArgs>) => this.EditingItem = (this.EditingItem === args.parameter) ? undefined : args.parameter);
 
             var cols = GridItemsControl.ColumnsProperty.Initialize(this);
             cols.CollectionChanged.Subscribe(this._ColumnsChanged, this);
