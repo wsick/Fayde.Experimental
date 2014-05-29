@@ -46,8 +46,8 @@
                     </DataTemplate>
                 </exp:GridTemplateColumn.CellTemplate>
             </exp:GridTemplateColumn>
-            <exp:GridTextColumn Binding="{Binding FirstName}" CellStyle="{StaticResource GridCellStyle}" />
-            <exp:GridTextColumn Binding="{Binding LastName}" />
+            <exp:GridTextColumn DisplayMemberPath="FirstName" CellStyle="{StaticResource GridCellStyle}" />
+            <exp:GridTextColumn DisplayMemberPath="LastName" />
             <exp:GridTemplateColumn>
                 <exp:GridTemplateColumn.CellTemplate>
                     <DataTemplate>
