@@ -80,7 +80,7 @@ declare module Fayde {
 }
 declare module Fayde.Collections {
     interface INotifyCollectionChanged {
-        CollectionChanged: MulticastEvent<NotifyCollectionChangedEventArgs>;
+        CollectionChanged: MulticastEvent<CollectionChangedEventArgs>;
     }
     var INotifyCollectionChanged_: IInterfaceDeclaration<INotifyCollectionChanged>;
 }
@@ -88,23 +88,23 @@ declare class EventArgs {
     static Empty: EventArgs;
 }
 declare module Fayde.Collections {
-    enum NotifyCollectionChangedAction {
+    enum CollectionChangedAction {
         Add = 1,
         Remove = 2,
         Replace = 3,
         Reset = 4,
     }
-    class NotifyCollectionChangedEventArgs extends EventArgs {
-        public Action: NotifyCollectionChangedAction;
+    class CollectionChangedEventArgs extends EventArgs {
+        public Action: CollectionChangedAction;
         public OldStartingIndex: number;
         public NewStartingIndex: number;
         public OldItems: any[];
         public NewItems: any[];
-        static Reset(allValues: any[]): NotifyCollectionChangedEventArgs;
-        static Replace(newValue: any, oldValue: any, index: number): NotifyCollectionChangedEventArgs;
-        static Add(newValue: any, index: number): NotifyCollectionChangedEventArgs;
-        static AddRange(newValues: any[], index: number): NotifyCollectionChangedEventArgs;
-        static Remove(oldValue: any, index: number): NotifyCollectionChangedEventArgs;
+        static Reset(allValues: any[]): CollectionChangedEventArgs;
+        static Replace(newValue: any, oldValue: any, index: number): CollectionChangedEventArgs;
+        static Add(newValue: any, index: number): CollectionChangedEventArgs;
+        static AddRange(newValues: any[], index: number): CollectionChangedEventArgs;
+        static Remove(oldValue: any, index: number): CollectionChangedEventArgs;
     }
 }
 declare module Fayde {
@@ -141,7 +141,7 @@ declare module Fayde.Collections {
     class ObservableCollection<T> implements IEnumerable<T>, INotifyCollectionChanged, INotifyPropertyChanged {
         private _ht;
         public GetEnumerator(): IEnumerator<T>;
-        public CollectionChanged: MulticastEvent<NotifyCollectionChangedEventArgs>;
+        public CollectionChanged: MulticastEvent<CollectionChangedEventArgs>;
         public PropertyChanged: MulticastEvent<PropertyChangedEventArgs>;
         public Count : number;
         public ToArray(): T[];
@@ -337,7 +337,6 @@ declare module Fayde {
         public SetValue(propd: DependencyProperty, value: any): void;
         public SetValueInternal(propd: DependencyProperty, value: any): void;
         public SetCurrentValue(propd: DependencyProperty, value: any): void;
-        public SetStoreValue(propd: DependencyProperty, value: any): void;
         public ClearValue(propd: DependencyProperty): void;
         public ReadLocalValue(propd: DependencyProperty): any;
         public ReadLocalValueInternal(propd: DependencyProperty): any;
@@ -1362,7 +1361,7 @@ declare module Fayde.Controls {
         private _SuspendItemsChanged;
         private _OnItemsUpdated(sender, e);
         private _OnItemsSourceUpdated(sender, e);
-        public OnItemsChanged(e: Collections.NotifyCollectionChangedEventArgs): void;
+        public OnItemsChanged(e: Collections.CollectionChangedEventArgs): void;
         public OnItemsAdded(index: number, newItems: any[]): void;
         public OnItemsRemoved(index: number, oldItems: any[]): void;
         private UpdateContainerTemplate(container, item);
@@ -1402,7 +1401,7 @@ declare module Fayde.Controls.Primitives {
         private _OnSelectedValuePathChanged(args);
         private _OnSelectionModeChanged(args);
         public OnApplyTemplate(): void;
-        public OnItemsChanged(e: Collections.NotifyCollectionChangedEventArgs): void;
+        public OnItemsChanged(e: Collections.CollectionChangedEventArgs): void;
         public OnItemsSourceChanged(args: IDependencyPropertyChangedEventArgs): void;
         public OnItemContainerStyleChanged(oldStyle: any, newStyle: any): void;
         public ClearContainerForItem(element: UIElement, item: any): void;
@@ -1438,6 +1437,7 @@ declare module Fayde.Controls {
         public ClearRoot(): void;
         public _ContentChanged(args: IDependencyPropertyChangedEventArgs): void;
         public _ContentTemplateChanged(): void;
+        private _ShouldInvalidateImplicitTemplate(oldValue, newValue);
         private _GetContentTemplate(type);
     }
     class ContentPresenter extends FrameworkElement {
@@ -2005,7 +2005,7 @@ declare module Fayde.Controls {
 }
 declare module Fayde.Controls {
     interface IItemCollection {
-        ItemsChanged: MulticastEvent<Collections.NotifyCollectionChangedEventArgs>;
+        ItemsChanged: MulticastEvent<Collections.CollectionChangedEventArgs>;
         ToArray(): any[];
         Count: number;
         GetValueAt(index: number): any;
@@ -2021,7 +2021,7 @@ declare module Fayde.Controls {
         Clear(): any;
     }
     class ItemCollection extends XamlObjectCollection<any> implements IItemCollection {
-        public ItemsChanged: MulticastEvent<Collections.NotifyCollectionChangedEventArgs>;
+        public ItemsChanged: MulticastEvent<Collections.CollectionChangedEventArgs>;
         public ToArray(): any[];
         public Count : number;
         public IsReadOnly: boolean;
@@ -2258,16 +2258,16 @@ declare module Fayde.Controls {
         public Cursor : CursorType;
         public SelectionCursor : number;
         public HasSelectedText : boolean;
-        public CaretBrush : Media.Brush;
-        public TextAlignment : TextAlignment;
-        public TextWrapping : TextWrapping;
-        public SelectionStart : number;
-        public SelectionLength : number;
+        public CaretBrush: Media.Brush;
+        public TextAlignment: TextAlignment;
+        public TextWrapping: TextWrapping;
+        public SelectionStart: number;
+        public SelectionLength: number;
         public DisplayText : string;
-        public SelectionBackground : Media.Brush;
-        public Background : Media.Brush;
-        public SelectionForeground : Media.Brush;
-        public Foreground : Media.Brush;
+        public SelectionBackground: Media.Brush;
+        public SelectionForeground: Media.Brush;
+        public Background: Media.Brush;
+        public Foreground: Media.Brush;
         public Font : Font;
         public Direction : FlowDirection;
         public TextDecorations : TextDecorations;
@@ -2276,6 +2276,7 @@ declare module Fayde.Controls {
         public Listen(listener: ITextModelListener): void;
         public Unlisten(listener: ITextModelListener): void;
         public _ModelChanged(type: TextBoxModelChangedType, newValue: any): void;
+        private _UpdateFont();
         public _SelectedTextChanged(newValue: string): void;
         public _SelectionStartChanged(newValue: number): void;
         public _SelectionLengthChanged(newValue: number): void;
@@ -2643,7 +2644,7 @@ declare module Fayde.Controls {
     }
 }
 declare module Fayde.Controls {
-    class TextBox extends TextBoxBase implements Text.ITextAttributesSource {
+    class TextBox extends TextBoxBase implements Text.ITextAttributesSource, IFontChangeable {
         static AcceptsReturnProperty: DependencyProperty;
         static CaretBrushProperty: DependencyProperty;
         static MaxLengthProperty: DependencyProperty;
@@ -2686,7 +2687,7 @@ declare module Fayde.Controls {
         public _EmitTextChanged(): void;
         public _EmitSelectionChanged(): void;
         private _IsReadOnlyChanged(args);
-        private _FontChanged(args);
+        public FontChanged(args: IDependencyPropertyChangedEventArgs): void;
         private _SelectionBackgroundListener;
         private _SelectionBackgroundChanged(args);
         private _SelectionForegroundListener;
@@ -3264,7 +3265,7 @@ declare module Fayde.Data {
         private _SourceAvailableMonitor;
         private _IsDataContextBound;
         private _DataContext;
-        private _TwoWayTextBox;
+        private _TwoWayLostFocusElement;
         public DataItem : any;
         private _Cached;
         private _CachedValue;
@@ -3281,8 +3282,9 @@ declare module Fayde.Data {
         public UpdateSource(): void;
         public _TryUpdateSourceObject(value: any): void;
         private _UpdateSourceCallback(sender, args);
-        private _TextBoxLostFocus();
-        private _UpdateSourceObject(value?, force?);
+        private _TargetLostFocus(sender, e);
+        private _ShouldUpdateSource();
+        private _UpdateSourceObject(value?);
         public OnDataContextChanged(newDataContext: any): void;
         private _Invalidate();
         public Refresh(): void;
@@ -6641,6 +6643,32 @@ declare module Fayde.Localization {
 declare module Fayde.Localization {
 }
 declare module Fayde.Localization {
+}
+declare module Fayde.Collections {
+    class DeepObservableCollection<T> extends ObservableCollection<T> {
+        public ItemPropertyChanged: MulticastEvent<ItemPropertyChangedEventArgs<T>>;
+        constructor();
+        private _OnCollectionChanged(sender, e);
+        private _OnItemPropertyChanged(sender, e);
+    }
+}
+declare module Fayde.Collections {
+    class ItemPropertyChangedEventArgs<T> extends PropertyChangedEventArgs {
+        public Item: T;
+        constructor(item: T, propertyName: string);
+    }
+}
+declare module Fayde.Collections {
+    class FilteredCollection<T> extends DeepObservableCollection<T> {
+        private _Source;
+        public Source : DeepObservableCollection<T>;
+        private _Filter;
+        public Filter : (item: any) => boolean;
+        constructor(filter?: (item: any) => boolean, source?: DeepObservableCollection<T>);
+        private _OnSourceCollectionChanged(sender, e);
+        private _OnSourceItemPropertyChanged(sender, e);
+        public Update(): void;
+    }
 }
 declare module Fayde.Xaml {
     interface IMarkupParseContext {
