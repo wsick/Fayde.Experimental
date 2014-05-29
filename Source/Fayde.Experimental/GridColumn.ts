@@ -3,6 +3,7 @@
 module Fayde.Experimental {
     import GridLength = Fayde.Controls.GridLength;
     import ColumnDefinition = Fayde.Controls.ColumnDefinition;
+    import ContentControl = Fayde.Controls.ContentControl;
 
     export class GridColumn extends DependencyObject {
         static WidthProperty = DependencyProperty.Register("Width", () => GridLength, GridColumn);
@@ -10,29 +11,39 @@ module Fayde.Experimental {
         static MinWidthProperty = DependencyProperty.Register("MinWidth", () => Number, GridColumn, 0.0);
         static ActualWidthProperty = DependencyProperty.RegisterReadOnly("ActualWidth", () => Number, GridColumn, 0.0);
         static CellStyleProperty = DependencyProperty.Register("CellStyle", () => Style, GridColumn);
+        static SourceProperty = DependencyProperty.Register("Source", () => Data.Binding, GridTextColumn);
         Width: GridLength;
         MaxWidth: number;
         MinWidth: number;
         ActualWidth: number;
         CellStyle: Style;
+        Source: Data.Binding;
 
         GetContainerForCell(item: any): UIElement {
             return new GridCell();
         }
         PrepareContainerForCell(cell: UIElement, item: any) {
-            var gc = <GridCell>cell;
-            if (gc instanceof GridCell) {
-                var binding = new Data.Binding("CellStyle");
-                binding.Source = this;
-                binding.Mode = Data.BindingMode.OneWay;
-                gc.SetBinding(FrameworkElement.StyleProperty, binding);
+            var binding: Data.Binding;
 
+            if (cell instanceof FrameworkElement) {
+                binding = new Data.Binding("CellStyle");
+                binding.Source = this;
+                cell.SetBinding(FrameworkElement.StyleProperty, binding);
+            }
+
+            if (cell instanceof ContentControl) {
+                binding = new Data.Binding("Source");
+                binding.Source = this;
+                binding.FallbackValue = item;
+                cell.SetBinding(ContentControl.ContentProperty, binding);
             }
         }
         ClearContainerForCell(cell: UIElement, item: any) {
-            var gc = <GridCell>cell;
-            if (gc instanceof GridCell) {
-                gc.ClearValue(FrameworkElement.StyleProperty);
+            if (cell instanceof FrameworkElement) {
+                cell.ClearValue(FrameworkElement.StyleProperty);
+            }
+            if (cell instanceof ContentControl) {
+                cell.ClearValue(ContentControl.ContentProperty);
             }
         }
 
