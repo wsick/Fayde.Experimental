@@ -102,19 +102,19 @@ module Fayde.Experimental {
             if (nc)
                 nc.CollectionChanged.Subscribe(this._OnItemsSourceUpdated, this);
         }
-        private _OnItemsSourceUpdated(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
+        private _OnItemsSourceUpdated(sender: any, e: Collections.CollectionChangedEventArgs) {
             switch (e.Action) {
-                case Collections.NotifyCollectionChangedAction.Add:
+                case Collections.CollectionChangedAction.Add:
                     this._AddItems(e.NewStartingIndex, e.NewItems);
                     break;
-                case Collections.NotifyCollectionChangedAction.Remove:
+                case Collections.CollectionChangedAction.Remove:
                     this._RemoveItems(e.OldStartingIndex, e.OldItems);
                     break;
-                case Collections.NotifyCollectionChangedAction.Replace:
+                case Collections.CollectionChangedAction.Replace:
                     this._RemoveItems(e.NewStartingIndex, e.OldItems);
                     this._AddItems(e.NewStartingIndex, e.NewItems);
                     break;
-                case Collections.NotifyCollectionChangedAction.Reset:
+                case Collections.CollectionChangedAction.Reset:
                     this._RemoveItems(0, e.OldItems);
                     break;
             }
@@ -225,26 +225,26 @@ module Fayde.Experimental {
             }
         }
 
-        private _ColumnsChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
+        private _ColumnsChanged(sender: any, e: Collections.CollectionChangedEventArgs) {
             var presenter = this.XamlNode.ItemsPresenter;
             if (!presenter)
                 return;
             switch (e.Action) {
-                case Collections.NotifyCollectionChangedAction.Add:
+                case Collections.CollectionChangedAction.Add:
                     for (var i = 0, len = e.NewItems.length; i < len; i++) {
                         presenter.OnColumnAdded(e.NewStartingIndex + i, e.NewItems[i]);
                     }
                     break;
-                case Collections.NotifyCollectionChangedAction.Remove:
+                case Collections.CollectionChangedAction.Remove:
                     for (var i = 0, len = e.OldItems.length; i < len; i++) {
                         presenter.OnColumnRemoved(e.OldStartingIndex + i);
                     }
                     break;
-                case Collections.NotifyCollectionChangedAction.Replace:
+                case Collections.CollectionChangedAction.Replace:
                     presenter.OnColumnRemoved(e.NewStartingIndex);
                     presenter.OnColumnAdded(e.NewStartingIndex, e.NewItems[i]);
                     break;
-                case Collections.NotifyCollectionChangedAction.Reset:
+                case Collections.CollectionChangedAction.Reset:
                     presenter.OnColumnsCleared();
                     break;
             }
@@ -256,7 +256,7 @@ module Fayde.Experimental {
             presenter.OnColumnChanged(e.Item);
         }
 
-        private _AdornersChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
+        private _AdornersChanged(sender: any, e: Collections.CollectionChangedEventArgs) {
             var presenter = this.XamlNode.ItemsPresenter;
             if (!presenter)
                 return;

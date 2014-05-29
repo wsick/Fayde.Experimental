@@ -39,26 +39,26 @@ module Fayde.Experimental {
             coll.ItemChanged.Subscribe(this._HeaderChanged, this);
         }
         
-        private _HeadersChanged(sender: any, e: Collections.NotifyCollectionChangedEventArgs) {
+        private _HeadersChanged(sender: any, e: Collections.CollectionChangedEventArgs) {
             var presenter = this.XamlNode.HeadersPresenter;
             if (!presenter)
                 return;
             switch (e.Action) {
-                case Collections.NotifyCollectionChangedAction.Add:
+                case Collections.CollectionChangedAction.Add:
                     for (var i = 0, len = e.NewItems.length; i < len; i++) {
                         presenter.OnHeaderAdded(e.NewStartingIndex + i, e.NewItems[i]);
                     }
                     break;
-                case Collections.NotifyCollectionChangedAction.Remove:
+                case Collections.CollectionChangedAction.Remove:
                     for (var i = 0, len = e.OldItems.length; i < len; i++) {
                         presenter.OnHeaderRemoved(e.OldStartingIndex + i);
                     }
                     break;
-                case Collections.NotifyCollectionChangedAction.Replace:
+                case Collections.CollectionChangedAction.Replace:
                     presenter.OnHeaderRemoved(e.NewStartingIndex);
                     presenter.OnHeaderAdded(e.NewStartingIndex, e.NewItems[i]);
                     break;
-                case Collections.NotifyCollectionChangedAction.Reset:
+                case Collections.CollectionChangedAction.Reset:
                     presenter.OnHeadersCleared();
                     break;
             }
