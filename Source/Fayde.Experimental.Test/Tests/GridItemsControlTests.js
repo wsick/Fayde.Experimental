@@ -17,7 +17,7 @@ define(["require", "exports"], function(require, exports) {
 
         function createTextColumn(displayMemberPath) {
             var col = new GridTextColumn();
-            col.Binding = new Fayde.Data.Binding(displayMemberPath);
+            col.DisplayMemberPath = displayMemberPath;
             return col;
         }
         function verifyColumns(grid, ilen, jlen) {

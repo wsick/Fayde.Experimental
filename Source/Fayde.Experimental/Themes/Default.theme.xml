@@ -2,6 +2,7 @@
 <ResourceDictionary
        xmlns="http://schemas.wsick.com/fayde"
        xmlns:x="http://schemas.wsick.com/fayde/x"
+       xmlns:vsm="http://schemas.wsick.com/fayde"
        xmlns:exp="lib:Fayde.Experimental">
     <Style TargetType="exp:GridItemsControl">
         <Setter Property="VerticalAlignment" Value="Top" />
@@ -50,6 +51,32 @@
                 <ControlTemplate TargetType="exp:GridCell">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                         <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ActiveTemplate}" Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="exp:GridTextCell">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="exp:GridTextCell">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            DataContext="{TemplateBinding Content}">
+                        <vsm:VisualStateManager.VisualStateGroups>
+                            <vsm:VisualStateGroup x:Name="EditStates">
+                                <vsm:VisualState x:Name="Display" />
+                                <vsm:VisualState x:Name="Edit">
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0" To="0" Storyboard.TargetName="PresentingTextBlock" Storyboard.TargetProperty="Opacity" />
+                                        <DoubleAnimation Duration="0" To="1" Storyboard.TargetName="EditingTextBox" Storyboard.TargetProperty="Opacity" />
+                                    </Storyboard>
+                                </vsm:VisualState>
+                            </vsm:VisualStateGroup>
+                        </vsm:VisualStateManager.VisualStateGroups>
+                        <Grid Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <TextBlock x:Name="PresentingTextBlock" />
+                            <TextBox x:Name="EditingTextBox" Visible="Collapsed" />
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

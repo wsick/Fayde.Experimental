@@ -95,6 +95,7 @@
     <TypeScriptCompile Include="EditingChangedEventArgs.ts" />
     <TypeScriptCompile Include="CellMouseButtonEventArgs.ts" />
     <TypeScriptCompile Include="CellMouseEventArgs.ts" />
+    <TypeScriptCompile Include="GridTextCell.ts" />
     <Content Include="Themes\Metro.theme.xml">
       <SubType>Designer</SubType>
     </Content>
