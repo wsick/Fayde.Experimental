@@ -29,6 +29,7 @@
     <Content Include="lib\requirejs\require.d.ts" />
     <Content Include="lib\requirejs\require.js" />
     <Content Include="lib\requirejs\text.js" />
+    <TypeScriptCompile Include="Models\TestItem.ts" />
     <Content Include="Tests\default.html" />
     <TypeScriptCompile Include="Tests\runner.ts" />
     <TypeScriptCompile Include="Tests\GridItemsControlTests.ts" />

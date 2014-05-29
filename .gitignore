@@ -112,3 +112,5 @@ Source/Fayde.Experimental.Test/ViewModels/MainViewModel.js.map
 Source/Fayde.Experimental/Fayde.Experimental.d.ts
 Source/Fayde.Experimental/Fayde.Experimental.js
 Source/Fayde.Experimental/Fayde.Experimental.js.map
+Source/Fayde.Experimental.Test/ViewModels/MainViewModel.js
+Source/Fayde.Experimental.Test/Models/TestItem.js
