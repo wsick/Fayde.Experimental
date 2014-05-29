@@ -11,7 +11,7 @@ module Fayde.Experimental {
         static MinWidthProperty = DependencyProperty.Register("MinWidth", () => Number, GridColumn, 0.0);
         static ActualWidthProperty = DependencyProperty.RegisterReadOnly("ActualWidth", () => Number, GridColumn, 0.0);
         static CellStyleProperty = DependencyProperty.Register("CellStyle", () => Style, GridColumn);
-        static SourceProperty = DependencyProperty.Register("Source", () => Data.Binding, GridTextColumn);
+        static SourceProperty = DependencyProperty.Register("Source", () => Data.Binding, GridColumn);
         Width: GridLength;
         MaxWidth: number;
         MinWidth: number;

@@ -5,7 +5,7 @@ module Fayde.Experimental {
 
     export class GridTemplateColumn extends GridColumn {
         static CellTemplateProperty = DependencyProperty.Register("CellTemplate", () => DataTemplate, GridTemplateColumn);
-        static EditTemplateProperty = DependencyProperty.Register("EditTemplate", () => DataTemplate, GridColumn);
+        static EditTemplateProperty = DependencyProperty.Register("EditTemplate", () => DataTemplate, GridTemplateColumn);
         CellTemplate: DataTemplate;
         EditTemplate: DataTemplate;
 
