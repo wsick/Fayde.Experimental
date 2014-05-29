@@ -3,7 +3,9 @@
 module Fayde.Experimental {
     export class GridTemplateColumn extends GridColumn {
         static CellTemplateProperty = DependencyProperty.Register("CellTemplate", () => DataTemplate, GridTemplateColumn);
+        static EditTemplateProperty = DependencyProperty.Register("EditTemplate", () => DataTemplate, GridColumn);
         CellTemplate: DataTemplate;
+        EditTemplate: DataTemplate;
 
         PrepareContainerForCell(cell: UIElement, item: any) {
             super.PrepareContainerForCell(cell, item);
@@ -16,6 +18,11 @@ module Fayde.Experimental {
                 binding = new Data.Binding("CellTemplate");
                 binding.Source = this;
                 gc.SetBinding(Fayde.Controls.ContentControl.ContentTemplateProperty, binding);
+
+                binding = new Data.Binding("EditTemplate");
+                binding.Source = this;
+                binding.Mode = Data.BindingMode.OneWay;
+                gc.SetBinding(GridCell.EditTemplateProperty, binding);
             }
         }
         ClearContainerForCell(cell: UIElement, item: any) {
@@ -24,6 +31,7 @@ module Fayde.Experimental {
             if (gc instanceof GridCell) {
                 gc.ClearValue(Fayde.Controls.ContentControl.ContentProperty);
                 gc.ClearValue(Fayde.Controls.ContentControl.ContentTemplateProperty);
+                gc.ClearValue(GridCell.EditTemplateProperty);
             }
         }
     }

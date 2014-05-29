@@ -39,8 +39,27 @@
                     </DataTemplate>
                 </exp:GridTemplateColumn.CellTemplate>
             </exp:GridTemplateColumn>
+            <exp:GridTemplateColumn>
+                <exp:GridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Button Content="Edit" MouseLeftButtonDown="{EventBinding Command={Binding Path=EditCommand, RelativeSource={RelativeSource ItemsControlParent}}, CommandParameter={Binding}}" />
+                    </DataTemplate>
+                </exp:GridTemplateColumn.CellTemplate>
+            </exp:GridTemplateColumn>
             <exp:GridTextColumn Binding="{Binding FirstName}" CellStyle="{StaticResource GridCellStyle}" />
             <exp:GridTextColumn Binding="{Binding LastName}" />
+            <exp:GridTemplateColumn>
+                <exp:GridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Age}" />
+                    </DataTemplate>
+                </exp:GridTemplateColumn.CellTemplate>
+                <exp:GridTemplateColumn.EditTemplate>
+                    <DataTemplate>
+                        <TextBox Text="{Binding Age, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    </DataTemplate>
+                </exp:GridTemplateColumn.EditTemplate>
+            </exp:GridTemplateColumn>
         </exp:GridItemsControl>
     </Grid>
 </Page>

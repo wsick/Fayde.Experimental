@@ -26,12 +26,14 @@ module Fayde.Experimental {
                 binding.Source = this;
                 binding.Mode = Data.BindingMode.OneWay;
                 gc.SetBinding(FrameworkElement.StyleProperty, binding);
+
             }
         }
         ClearContainerForCell(cell: UIElement, item: any) {
             var gc = <GridCell>cell;
-            if (gc instanceof GridCell)
+            if (gc instanceof GridCell) {
                 gc.ClearValue(FrameworkElement.StyleProperty);
+            }
         }
 
         private _Definition: ColumnDefinition = null;
