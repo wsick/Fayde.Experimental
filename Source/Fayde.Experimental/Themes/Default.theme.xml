@@ -109,12 +109,12 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="exp:GridNumericColumn">
+    <Style TargetType="exp:GridNumericCell">
         <Setter Property="DisplayProperty" Value="Text" />
         <Setter Property="EditProperty" Value="Value" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="exp:GridNumericColumn">
+                <ControlTemplate TargetType="exp:GridNumericCell">
                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                         <vsm:VisualStateManager.VisualStateGroups>
                             <vsm:VisualStateGroup x:Name="EditStates">
