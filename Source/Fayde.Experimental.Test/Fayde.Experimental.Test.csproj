@@ -30,10 +30,10 @@
     <Content Include="lib\qunit\qunit-1.13.0.js" />
     <Content Include="lib\qunit\qunit.d.ts" />
     <TypeScriptCompile Include="ViewModels\MainViewModel.ts" />
+    <TypeScriptCompile Include="Models\TestItem.ts" />
     <Content Include="lib\requirejs\require.d.ts" />
     <Content Include="lib\requirejs\require.js" />
     <Content Include="lib\requirejs\text.js" />
-    <TypeScriptCompile Include="Models\TestItem.ts" />
     <Content Include="Tests\default.html" />
     <TypeScriptCompile Include="Tests\runner.ts" />
     <TypeScriptCompile Include="Tests\GridItemsControlTests.ts" />

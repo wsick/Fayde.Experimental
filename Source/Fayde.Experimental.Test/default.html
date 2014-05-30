@@ -21,14 +21,14 @@
             }
         };
     </script>
-    <script data-lib="Fayde.Controls">
-        require.shim["lib/Fayde.Controls/Fayde.Controls"] = {
-            exports: "Fayde.Controls"
-        };
-    </script>
     <script data-lib="Fayde.Experimental">
         require.shim["/Fayde.Experimental/Fayde.Experimental.js"] = {
             exports: "Fayde.Experimental"
+        };
+    </script>
+<script data-lib="Fayde.Controls">    
+        require.shim["lib/Fayde.Controls/Fayde.Controls"] = {
+            exports: "Fayde.Controls"
         };
     </script>
     <script src="lib/requirejs/require.js"></script>
