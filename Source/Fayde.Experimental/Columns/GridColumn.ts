@@ -1,4 +1,4 @@
-/// <reference path="Internal/ItemChangedCollection.ts" />
+/// <reference path="../Internal/ItemChangedCollection.ts" />
 
 module Fayde.Experimental {
     import GridLength = Fayde.Controls.GridLength;
@@ -12,12 +12,14 @@ module Fayde.Experimental {
         static ActualWidthProperty = DependencyProperty.RegisterReadOnly("ActualWidth", () => Number, GridColumn, 0.0);
         static CellStyleProperty = DependencyProperty.Register("CellStyle", () => Style, GridColumn);
         static SourceProperty = DependencyProperty.Register("Source", () => Data.Binding, GridColumn);
+        static IsEditableProperty = DependencyProperty.Register("IsEditable", () => Boolean, GridTemplateColumn, false);
         Width: GridLength;
         MaxWidth: number;
         MinWidth: number;
         ActualWidth: number;
         CellStyle: Style;
         Source: Data.Binding;
+        IsEditable: boolean;
 
         GetContainerForCell(item: any): UIElement {
             return new GridCell();
@@ -47,6 +49,12 @@ module Fayde.Experimental {
                 };
                 cell.SetBinding(ContentControl.ContentProperty, binding);
             }
+
+            if (cell instanceof GridCell) {
+                binding = new Data.Binding("IsEditable");
+                binding.Source = this;
+                cell.SetBinding(GridCell.IsEditableProperty, binding);
+            }
         }
         ClearContainerForCell(cell: UIElement, item: any) {
             if (cell instanceof FrameworkElement) {
@@ -54,6 +62,9 @@ module Fayde.Experimental {
             }
             if (cell instanceof ContentControl) {
                 cell.ClearValue(ContentControl.ContentProperty);
+            }
+            if (cell instanceof GridCell) {
+                cell.ClearValue(GridCell.IsEditableProperty);
             }
         }
 

@@ -3,6 +3,7 @@
        xmlns="http://schemas.wsick.com/fayde"
        xmlns:x="http://schemas.wsick.com/fayde/x"
        xmlns:vsm="http://schemas.wsick.com/fayde"
+       xmlns:controls="lib:Fayde.Controls"
        xmlns:exp="lib:Fayde.Experimental">
     <Style TargetType="exp:GridItemsControl">
         <Setter Property="VerticalAlignment" Value="Top" />
@@ -76,6 +77,8 @@
         </Setter>
     </Style>
     <Style TargetType="exp:GridTextCell">
+        <Setter Property="DisplayProperty" Value="Text" />
+        <Setter Property="EditProperty" Value="Text" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="exp:GridTextCell">
@@ -85,10 +88,10 @@
                                 <vsm:VisualState x:Name="Display" />
                                 <vsm:VisualState x:Name="Edit">
                                     <Storyboard>
-                                        <ObjectAnimationUsingKeyFrames Duration="0" To="0" Storyboard.TargetName="PresentingTextBlock" Storyboard.TargetProperty="Visibility">
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="0" Storyboard.TargetName="Presenter" Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
                                         </ObjectAnimationUsingKeyFrames>
-                                        <ObjectAnimationUsingKeyFrames Duration="0" To="1" Storyboard.TargetName="EditingTextBox" Storyboard.TargetProperty="Visibility">
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="1" Storyboard.TargetName="Editor" Storyboard.TargetProperty="Visibility">
                                             <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
@@ -98,8 +101,41 @@
                         </vsm:VisualStateManager.VisualStateGroups>
                         <Grid Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                               DataContext="{TemplateBinding Content}">
-                            <TextBlock x:Name="PresentingTextBlock" />
-                            <TextBox x:Name="EditingTextBox" Visibility="Collapsed" />
+                            <TextBlock x:Name="Presenter" />
+                            <TextBox x:Name="Editor" Visibility="Collapsed" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style TargetType="exp:GridNumericColumn">
+        <Setter Property="DisplayProperty" Value="Text" />
+        <Setter Property="EditProperty" Value="Value" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="exp:GridNumericColumn">
+                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                        <vsm:VisualStateManager.VisualStateGroups>
+                            <vsm:VisualStateGroup x:Name="EditStates">
+                                <vsm:VisualState x:Name="Display" />
+                                <vsm:VisualState x:Name="Edit">
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="0" Storyboard.TargetName="Presenter" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <ObjectAnimationUsingKeyFrames Duration="0" To="1" Storyboard.TargetName="Editor" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </vsm:VisualState>
+                                <vsm:VisualState x:Name="NotEditable" />
+                            </vsm:VisualStateGroup>
+                        </vsm:VisualStateManager.VisualStateGroups>
+                        <Grid Cursor="{TemplateBinding Cursor}" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              DataContext="{TemplateBinding Content}">
+                            <TextBlock x:Name="Presenter" />
+                            <controls:NumericUpDown x:Name="Editor" Visibility="Collapsed" />
                         </Grid>
                     </Border>
                 </ControlTemplate>

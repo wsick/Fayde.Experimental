@@ -70,23 +70,23 @@
     <TypeScriptCompile Include="GridItemsPresenter.ts" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="GridCell.ts" />
+    <TypeScriptCompile Include="Cells\GridCell.ts" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="GridColumn.ts" />
+    <TypeScriptCompile Include="Columns\GridColumn.ts" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="GridColumnChangedEventArgs.ts" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="GridTextColumn.ts" />
-    <TypeScriptCompile Include="GridTemplateColumn.ts" />
+    <TypeScriptCompile Include="Columns\GridTextColumn.ts" />
+    <TypeScriptCompile Include="Columns\GridTemplateColumn.ts" />
     <TypeScriptCompile Include="GridHeader.ts" />
     <TypeScriptCompile Include="GridHeadersControl.ts" />
     <TypeScriptCompile Include="GridHeaderChangedEventArgs.ts" />
     <TypeScriptCompile Include="GridHeadersPresenter.ts" />
     <TypeScriptCompile Include="HeaderColumnDefinition.ts" />
-    <TypeScriptCompile Include="GridHeaderCell.ts" />
+    <TypeScriptCompile Include="Cells\GridHeaderCell.ts" />
     <TypeScriptCompile Include="Internal\ItemChangedCollection.ts" />
     <TypeScriptCompile Include="Primitives\GridAdorner.ts" />
     <TypeScriptCompile Include="HoveredRowAdorner.ts" />
@@ -95,7 +95,12 @@
     <TypeScriptCompile Include="EditingChangedEventArgs.ts" />
     <TypeScriptCompile Include="CellMouseButtonEventArgs.ts" />
     <TypeScriptCompile Include="CellMouseEventArgs.ts" />
-    <TypeScriptCompile Include="GridTextCell.ts" />
+    <TypeScriptCompile Include="Cells\GridTextCell.ts" />
+    <TypeScriptCompile Include="Columns\GridNumericColumn.ts" />
+    <Content Include="lib\Fayde.Controls\Fayde.Controls.d.ts" />
+    <TypeScriptCompile Include="Columns\GridInputColumn.ts" />
+    <TypeScriptCompile Include="Cells\GridInputCell.ts" />
+    <TypeScriptCompile Include="Cells\GridNumericCell.ts" />
     <Content Include="Themes\Metro.theme.xml">
       <SubType>Designer</SubType>
     </Content>
