@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Fayde.Experimental</id>
-        <version>0.1.0.5</version>
+        <version>0.1.0.6</version>
         <authors>Bradley Sickles</authors>
         <projectUrl>http://fayde.wsick.com</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
@@ -10,6 +10,7 @@
         <tags>fayde xaml silverlight</tags>
         <dependencies>
             <dependency id="Fayde" version="0.9.8.41" />
+            <dependency id="Fayde.Controls" version="0.9.8.12" />
         </dependencies>
     </metadata>
     <files>
@@ -22,6 +23,7 @@
         <file src="tools\uninstall.ps1" target="tools\uninstall.ps1" />
     </files>
 </package>
+
 
 
 

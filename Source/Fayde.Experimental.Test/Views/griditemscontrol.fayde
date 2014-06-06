@@ -8,6 +8,7 @@
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontFamily" Value="'Helvetica Nueue', Helvetica, Arial, sans-serif" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="5,0" />
         </Style>
     </Page.Resources>
     <Grid x:Name="LayoutRoot">
@@ -48,7 +49,8 @@
             </exp:GridTemplateColumn>
             <exp:GridTextColumn DisplayMemberPath="FirstName" CellStyle="{StaticResource GridCellStyle}" />
             <exp:GridTextColumn DisplayMemberPath="LastName" IsEditable="true" />
-            <exp:GridNumericColumn DisplayMemberPath="Age" IsEditable="true" />
+            <exp:GridNumericColumn DisplayMemberPath="Age" IsEditable="true" CellStyle="{StaticResource GridCellStyle}" />
+            <exp:GridDateColumn DisplayMemberPath="SpecialDay" IsEditable="true" StringFormat="{0:d}" CellStyle="{StaticResource GridCellStyle}" />
         </exp:GridItemsControl>
     </Grid>
 </Page>

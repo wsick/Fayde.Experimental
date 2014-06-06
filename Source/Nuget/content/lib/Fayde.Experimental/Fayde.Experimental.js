@@ -7,639 +7,6 @@
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
-        var CellMouseButtonEventArgs = (function (_super) {
-            __extends(CellMouseButtonEventArgs, _super);
-            function CellMouseButtonEventArgs(cell, args) {
-                _super.call(this, args.AbsolutePos);
-                Object.defineProperty(this, "Cell", { value: cell, writable: false });
-            }
-            return CellMouseButtonEventArgs;
-        })(Fayde.Input.MouseButtonEventArgs);
-        Experimental.CellMouseButtonEventArgs = CellMouseButtonEventArgs;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var CellMouseEventArgs = (function (_super) {
-            __extends(CellMouseEventArgs, _super);
-            function CellMouseEventArgs(cell, args) {
-                _super.call(this, args.AbsolutePos);
-                Object.defineProperty(this, "Cell", { value: cell, writable: false });
-            }
-            return CellMouseEventArgs;
-        })(Fayde.Input.MouseEventArgs);
-        Experimental.CellMouseEventArgs = CellMouseEventArgs;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var EditingChangedEventArgs = (function (_super) {
-            __extends(EditingChangedEventArgs, _super);
-            function EditingChangedEventArgs(item, row) {
-                _super.call(this);
-                Object.defineProperty(this, "Item", { value: item, writable: false });
-                Object.defineProperty(this, "Row", { value: row, writable: false });
-            }
-            return EditingChangedEventArgs;
-        })(EventArgs);
-        Experimental.EditingChangedEventArgs = EditingChangedEventArgs;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var GridCell = (function (_super) {
-            __extends(GridCell, _super);
-            function GridCell() {
-                _super.call(this);
-                this.DefaultStyleKey = this.constructor;
-            }
-            GridCell.prototype.OnIsEditingChanged = function (oldIsEditing, newIsEditing) {
-                this.UpdateVisualState();
-            };
-            GridCell.prototype.OnIsEditableChanged = function (oldIsEditable, newIsEditable) {
-                this.UpdateVisualState();
-            };
-
-            GridCell.prototype.OnApplyTemplate = function () {
-                this.UpdateVisualState();
-                _super.prototype.OnApplyTemplate.call(this);
-            };
-
-            GridCell.prototype.GoToStates = function (gotoFunc) {
-                _super.prototype.GoToStates.call(this, gotoFunc);
-                this.GoToStateEditing(gotoFunc);
-            };
-            GridCell.prototype.GoToStateEditing = function (gotoFunc) {
-                return gotoFunc(this.IsEditing ? (this.IsEditable ? "Edit" : "NotEditable") : "Display");
-            };
-            GridCell.IsEditingProperty = DependencyProperty.Register("IsEditing", function () {
-                return Boolean;
-            }, GridCell, false, function (d, args) {
-                return d.OnIsEditingChanged(args.OldValue, args.NewValue);
-            });
-            GridCell.IsEditableProperty = DependencyProperty.Register("IsEditable", function () {
-                return Boolean;
-            }, GridCell, false, function (d, args) {
-                return d.OnIsEditableChanged(args.OldValue, args.NewValue);
-            });
-            GridCell.EditTemplateProperty = DependencyProperty.Register("EditTemplate", function () {
-                return Fayde.DataTemplate;
-            }, GridCell);
-            return GridCell;
-        })(Fayde.Controls.ContentControl);
-        Experimental.GridCell = GridCell;
-        Fayde.Controls.TemplateVisualStates(GridCell, { GroupName: "EditStates", Name: "Display" }, { GroupName: "EditStates", Name: "Edit" }, { GroupName: "EditStates", Name: "NotEditable" });
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        (function (Internal) {
-            var ItemChangedCollection = (function (_super) {
-                __extends(ItemChangedCollection, _super);
-                function ItemChangedCollection() {
-                    _super.apply(this, arguments);
-                    this.ItemChanged = new MulticastEvent();
-                    this.CollectionChanged = new MulticastEvent();
-                }
-                ItemChangedCollection.prototype._RaiseItemAdded = function (value, index) {
-                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Add(value, index));
-                };
-                ItemChangedCollection.prototype._RaiseItemRemoved = function (value, index) {
-                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Remove(value, index));
-                };
-                ItemChangedCollection.prototype._RaiseItemReplaced = function (removed, added, index) {
-                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Replace(added, removed, index));
-                };
-                ItemChangedCollection.prototype._RaiseCleared = function (old) {
-                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Reset(old));
-                };
-                return ItemChangedCollection;
-            })(Fayde.XamlObjectCollection);
-            Internal.ItemChangedCollection = ItemChangedCollection;
-
-            var ItemChangedEventArgs = (function (_super) {
-                __extends(ItemChangedEventArgs, _super);
-                function ItemChangedEventArgs(t) {
-                    _super.call(this);
-                    Object.defineProperty(this, "Item", { value: t, writable: false });
-                }
-                return ItemChangedEventArgs;
-            })(EventArgs);
-            Internal.ItemChangedEventArgs = ItemChangedEventArgs;
-        })(Experimental.Internal || (Experimental.Internal = {}));
-        var Internal = Experimental.Internal;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var GridLength = Fayde.Controls.GridLength;
-        var ColumnDefinition = Fayde.Controls.ColumnDefinition;
-        var ContentControl = Fayde.Controls.ContentControl;
-
-        var GridColumn = (function (_super) {
-            __extends(GridColumn, _super);
-            function GridColumn() {
-                _super.apply(this, arguments);
-                this._Definition = null;
-                this._ActualWidthListener = null;
-            }
-            GridColumn.prototype.GetContainerForCell = function (item) {
-                return new Experimental.GridCell();
-            };
-            GridColumn.prototype.PrepareContainerForCell = function (cell, item) {
-                var binding;
-
-                if (cell instanceof Fayde.FrameworkElement) {
-                    binding = new Fayde.Data.Binding("CellStyle");
-                    binding.Source = this;
-                    cell.SetBinding(Fayde.FrameworkElement.StyleProperty, binding);
-                }
-
-                if (cell instanceof ContentControl) {
-                    binding = new Fayde.Data.Binding("Source");
-                    binding.Source = this;
-
-                    binding.Converter = {
-                        Convert: function (value, targetType, parameter, culture) {
-                            if (value === undefined)
-                                return item;
-                            return value;
-                        },
-                        ConvertBack: function (value, targetType, parameter, culture) {
-                            return value;
-                        }
-                    };
-                    cell.SetBinding(ContentControl.ContentProperty, binding);
-                }
-            };
-            GridColumn.prototype.ClearContainerForCell = function (cell, item) {
-                if (cell instanceof Fayde.FrameworkElement) {
-                    cell.ClearValue(Fayde.FrameworkElement.StyleProperty);
-                }
-                if (cell instanceof ContentControl) {
-                    cell.ClearValue(ContentControl.ContentProperty);
-                }
-            };
-
-            GridColumn.prototype.AttachToDefinition = function (coldef) {
-                this._Definition = coldef;
-                if (!coldef)
-                    return;
-
-                var binding = new Fayde.Data.Binding("Width");
-                binding.Source = this;
-                binding.Mode = 1 /* OneWay */;
-                binding.Converter = new EmptyWidthConverter();
-                coldef.SetBinding(ColumnDefinition.WidthProperty, binding);
-
-                binding = new Fayde.Data.Binding("MaxWidth");
-                binding.Source = this;
-                binding.Mode = 1 /* OneWay */;
-                coldef.SetBinding(ColumnDefinition.MaxWidthProperty, binding);
-
-                binding = new Fayde.Data.Binding("MinWidth");
-                binding.Source = this;
-                binding.Mode = 1 /* OneWay */;
-                coldef.SetBinding(ColumnDefinition.MinWidthProperty, binding);
-
-                this._ActualWidthListener = ColumnDefinition.ActualWidthProperty.Store.ListenToChanged(coldef, ColumnDefinition.ActualWidthProperty, this._OnActualWidthChanged, this);
-            };
-            GridColumn.prototype._OnActualWidthChanged = function (sender, args) {
-                this.SetCurrentValue(ColumnDefinition.ActualWidthProperty, args.NewValue);
-            };
-            GridColumn.prototype.DetachDefinition = function () {
-                var awl = this._ActualWidthListener;
-                var coldef = this._Definition;
-                this._ActualWidthListener = null;
-                this._Definition = null;
-                if (awl)
-                    awl.Detach();
-                if (coldef) {
-                    coldef.ClearValue(ColumnDefinition.WidthProperty);
-                    coldef.ClearValue(ColumnDefinition.MaxWidthProperty);
-                    coldef.ClearValue(ColumnDefinition.MinWidthProperty);
-                }
-            };
-            GridColumn.WidthProperty = DependencyProperty.Register("Width", function () {
-                return GridLength;
-            }, GridColumn);
-            GridColumn.MaxWidthProperty = DependencyProperty.Register("MaxWidth", function () {
-                return Number;
-            }, GridColumn, Number.POSITIVE_INFINITY);
-            GridColumn.MinWidthProperty = DependencyProperty.Register("MinWidth", function () {
-                return Number;
-            }, GridColumn, 0.0);
-            GridColumn.ActualWidthProperty = DependencyProperty.RegisterReadOnly("ActualWidth", function () {
-                return Number;
-            }, GridColumn, 0.0);
-            GridColumn.CellStyleProperty = DependencyProperty.Register("CellStyle", function () {
-                return Fayde.Style;
-            }, GridColumn);
-            GridColumn.SourceProperty = DependencyProperty.Register("Source", function () {
-                return Fayde.Data.Binding;
-            }, GridColumn);
-            return GridColumn;
-        })(Fayde.DependencyObject);
-        Experimental.GridColumn = GridColumn;
-
-        var GridColumnCollection = (function (_super) {
-            __extends(GridColumnCollection, _super);
-            function GridColumnCollection() {
-                _super.apply(this, arguments);
-            }
-            return GridColumnCollection;
-        })(Experimental.Internal.ItemChangedCollection);
-        Experimental.GridColumnCollection = GridColumnCollection;
-
-        var EmptyWidthConverter = (function () {
-            function EmptyWidthConverter() {
-            }
-            EmptyWidthConverter.prototype.Convert = function (value, targetType, parameter, culture) {
-                if (!value)
-                    return "auto";
-                return value;
-            };
-            EmptyWidthConverter.prototype.ConvertBack = function (value, targetType, parameter, culture) {
-            };
-            return EmptyWidthConverter;
-        })();
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var GridColumnChangedEventArgs = (function (_super) {
-            __extends(GridColumnChangedEventArgs, _super);
-            function GridColumnChangedEventArgs(col) {
-                _super.call(this);
-                Object.defineProperty(this, "GridColumn", { value: col, writable: false });
-            }
-            return GridColumnChangedEventArgs;
-        })(EventArgs);
-        Experimental.GridColumnChangedEventArgs = GridColumnChangedEventArgs;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var ContentControl = Fayde.Controls.ContentControl;
-
-        var GridHeader = (function (_super) {
-            __extends(GridHeader, _super);
-            function GridHeader() {
-                _super.apply(this, arguments);
-            }
-            GridHeader.prototype.GetContainerForCell = function () {
-                return new Experimental.GridHeaderCell();
-            };
-            GridHeader.prototype.PrepareContainerForCell = function (cell) {
-                var gc = cell;
-                if (gc instanceof Experimental.GridHeaderCell) {
-                    var binding = new Fayde.Data.Binding("Header");
-                    binding.Source = this;
-                    gc.SetBinding(ContentControl.ContentProperty, binding);
-
-                    binding = new Fayde.Data.Binding("HeaderTemplate");
-                    binding.Source = this;
-                    gc.SetBinding(ContentControl.ContentTemplateProperty, binding);
-
-                    binding = new Fayde.Data.Binding("HeaderStyle");
-                    binding.Source = this;
-                    binding.Mode = 1 /* OneWay */;
-                    gc.SetBinding(Fayde.FrameworkElement.StyleProperty, binding);
-                }
-            };
-            GridHeader.prototype.ClearContainerForCell = function (cell) {
-                var gc = cell;
-                if (gc instanceof Experimental.GridHeaderCell) {
-                    gc.ClearValue(ContentControl.ContentProperty);
-                    gc.ClearValue(ContentControl.ContentTemplateProperty);
-                    gc.ClearValue(Fayde.FrameworkElement.StyleProperty);
-                }
-            };
-            GridHeader.HeaderProperty = DependencyProperty.Register("Header", function () {
-                return Object;
-            }, GridHeader);
-            GridHeader.HeaderTemplateProperty = DependencyProperty.Register("HeaderTemplate", function () {
-                return Fayde.DataTemplate;
-            }, GridHeader);
-            GridHeader.HeaderStyleProperty = DependencyProperty.Register("HeaderStyle", function () {
-                return Fayde.Style;
-            }, GridHeader);
-            return GridHeader;
-        })(Fayde.DependencyObject);
-        Experimental.GridHeader = GridHeader;
-
-        var GridHeaderCollection = (function (_super) {
-            __extends(GridHeaderCollection, _super);
-            function GridHeaderCollection() {
-                _super.apply(this, arguments);
-            }
-            return GridHeaderCollection;
-        })(Experimental.Internal.ItemChangedCollection);
-        Experimental.GridHeaderCollection = GridHeaderCollection;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var GridHeaderCell = (function (_super) {
-            __extends(GridHeaderCell, _super);
-            function GridHeaderCell() {
-                _super.call(this);
-                this.DefaultStyleKey = this.constructor;
-            }
-            return GridHeaderCell;
-        })(Fayde.Controls.ContentControl);
-        Experimental.GridHeaderCell = GridHeaderCell;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var GridHeaderChangedEventArgs = (function (_super) {
-            __extends(GridHeaderChangedEventArgs, _super);
-            function GridHeaderChangedEventArgs(header) {
-                _super.call(this);
-                Object.defineProperty(this, "GridHeader", { value: header, writable: false });
-            }
-            return GridHeaderChangedEventArgs;
-        })(EventArgs);
-        Experimental.GridHeaderChangedEventArgs = GridHeaderChangedEventArgs;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var GridHeadersControlNode = (function (_super) {
-            __extends(GridHeadersControlNode, _super);
-            function GridHeadersControlNode(xobj) {
-                _super.call(this, xobj);
-                this.HeadersPresenter = null;
-            }
-            GridHeadersControlNode.prototype.GetDefaultVisualTree = function () {
-                var presenter = this.HeadersPresenter;
-                if (!presenter)
-                    (presenter = new Experimental.GridHeadersPresenter()).TemplateOwner = this.XObject;
-                return presenter;
-            };
-            return GridHeadersControlNode;
-        })(Fayde.Controls.ControlNode);
-        Experimental.GridHeadersControlNode = GridHeadersControlNode;
-
-        var GridHeadersControl = (function (_super) {
-            __extends(GridHeadersControl, _super);
-            function GridHeadersControl() {
-                _super.call(this);
-                this.DefaultStyleKey = this.constructor;
-                var coll = GridHeadersControl.HeadersProperty.Initialize(this);
-                coll.CollectionChanged.Subscribe(this._HeadersChanged, this);
-                coll.ItemChanged.Subscribe(this._HeaderChanged, this);
-            }
-            GridHeadersControl.prototype.CreateNode = function () {
-                return new GridHeadersControlNode(this);
-            };
-
-            GridHeadersControl.prototype.OnItemsControlChanged = function (args) {
-                var presenter = this.XamlNode.HeadersPresenter;
-                if (!presenter)
-                    return;
-                presenter.UnlinkControl(args.OldValue);
-                presenter.LinkControl(args.NewValue);
-            };
-
-            GridHeadersControl.prototype._HeadersChanged = function (sender, e) {
-                var presenter = this.XamlNode.HeadersPresenter;
-                if (!presenter)
-                    return;
-                switch (e.Action) {
-                    case 1 /* Add */:
-                        for (var i = 0, len = e.NewItems.length; i < len; i++) {
-                            presenter.OnHeaderAdded(e.NewStartingIndex + i, e.NewItems[i]);
-                        }
-                        break;
-                    case 2 /* Remove */:
-                        for (var i = 0, len = e.OldItems.length; i < len; i++) {
-                            presenter.OnHeaderRemoved(e.OldStartingIndex + i);
-                        }
-                        break;
-                    case 3 /* Replace */:
-                        presenter.OnHeaderRemoved(e.NewStartingIndex);
-                        presenter.OnHeaderAdded(e.NewStartingIndex, e.NewItems[i]);
-                        break;
-                    case 4 /* Reset */:
-                        presenter.OnHeadersCleared();
-                        break;
-                }
-            };
-            GridHeadersControl.prototype._HeaderChanged = function (sender, e) {
-                var presenter = this.XamlNode.HeadersPresenter;
-                if (!presenter)
-                    return;
-                presenter.OnHeaderChanged(e.Item);
-            };
-            GridHeadersControl.ItemsControlProperty = DependencyProperty.Register("ItemsControl", function () {
-                return Experimental.GridItemsControl;
-            }, GridHeadersControl, undefined, function (d, args) {
-                return d.OnItemsControlChanged(args);
-            });
-
-            GridHeadersControl.HeadersProperty = DependencyProperty.RegisterImmutable("Headers", function () {
-                return Experimental.GridHeaderCollection;
-            }, GridHeadersControl);
-            return GridHeadersControl;
-        })(Fayde.Controls.Control);
-        Experimental.GridHeadersControl = GridHeadersControl;
-        Fayde.Xaml.Content(GridHeadersControl, GridHeadersControl.HeadersProperty);
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
-        var Grid = Fayde.Controls.Grid;
-
-        var GridHeadersPresenterNode = (function (_super) {
-            __extends(GridHeadersPresenterNode, _super);
-            function GridHeadersPresenterNode(xobj) {
-                _super.call(this, xobj);
-            }
-            Object.defineProperty(GridHeadersPresenterNode.prototype, "ElementRoot", {
-                get: function () {
-                    return this._ElementRoot;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            GridHeadersPresenterNode.prototype.DoApplyTemplateWithError = function (error) {
-                if (this._ElementRoot)
-                    return false;
-
-                var xobj = this.XObject;
-                var ghc = xobj.TemplateOwner;
-                if (!(ghc instanceof Experimental.GridHeadersControl))
-                    return false;
-
-                this._ElementRoot = new Grid();
-
-                if (!this.FinishApplyTemplateWithError(this._ElementRoot, error))
-                    return false;
-                ghc.XamlNode.HeadersPresenter = xobj;
-                for (var i = 0, headers = ghc.Headers.ToArray(), len = headers.length; i < len; i++) {
-                    xobj.OnHeaderAdded(i, headers[i]);
-                }
-                xobj.LinkControl(ghc.ItemsControl);
-                return true;
-            };
-            return GridHeadersPresenterNode;
-        })(Fayde.FENode);
-        Experimental.GridHeadersPresenterNode = GridHeadersPresenterNode;
-
-        var GridHeadersPresenter = (function (_super) {
-            __extends(GridHeadersPresenter, _super);
-            function GridHeadersPresenter() {
-                _super.apply(this, arguments);
-                this._Headers = [];
-                this._HeaderContainers = [];
-                this._LinkedItemsControl = null;
-            }
-            GridHeadersPresenter.prototype.CreateNode = function () {
-                return new GridHeadersPresenterNode(this);
-            };
-
-            Object.defineProperty(GridHeadersPresenter.prototype, "GridHeadersControl", {
-                get: function () {
-                    return this.TemplateOwner instanceof Experimental.GridHeadersControl ? this.TemplateOwner : null;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(GridHeadersPresenter.prototype, "Panel", {
-                get: function () {
-                    return this.XamlNode.ElementRoot;
-                },
-                enumerable: true,
-                configurable: true
-            });
-
-            GridHeadersPresenter.prototype.OnHeaderAdded = function (index, header) {
-                this._Headers.splice(index, 0, header);
-
-                var grid = this.Panel;
-                var coldef = new Experimental.HeaderColumnDefinition();
-                grid.ColumnDefinitions.Insert(index, coldef);
-                var linkedGrid = this.LinkedItemsPanel;
-                if (linkedGrid)
-                    coldef.Link(linkedGrid.ColumnDefinitions.GetValueAt(index));
-
-                var containers = this._HeaderContainers;
-                var cell = header.GetContainerForCell();
-                containers.splice(index, 0, cell);
-                header.PrepareContainerForCell(cell);
-
-                for (var i = index, len = containers.length; i < len; i++) {
-                    Grid.SetColumn(containers[i], i);
-                }
-
-                grid.Children.Insert(index, cell);
-            };
-            GridHeadersPresenter.prototype.OnHeaderRemoved = function (index) {
-                var header = this._Headers[index];
-                var containers = this._HeaderContainers;
-                var grid = this.Panel;
-                var coldefs = grid.ColumnDefinitions;
-
-                var cell = containers.splice(index, 1)[0];
-                header.ClearContainerForCell(cell);
-                grid.Children.RemoveAt(index);
-
-                coldefs.GetValueAt(index).Unlink();
-                coldefs.RemoveAt(index);
-
-                for (var i = index, len = containers.length; i < len; i++) {
-                    Grid.SetColumn(containers[i], i);
-                }
-            };
-            GridHeadersPresenter.prototype.OnHeadersCleared = function () {
-                var grid = this.Panel;
-                var coldefs = grid.ColumnDefinitions;
-                for (var i = 0, headers = this._Headers, containers = this._HeaderContainers, len = containers.length; i < len; i++) {
-                    var header = headers[i];
-                    header.ClearContainerForCell(containers[i]);
-                    coldefs.GetValueAt(i).Unlink();
-                }
-                coldefs.Clear();
-                grid.Children.Clear();
-                this._Headers.length = 0;
-                this._HeaderContainers.length = 0;
-            };
-            GridHeadersPresenter.prototype.OnHeaderChanged = function (header) {
-                var index = this._Headers.indexOf(header);
-                var cell = this._HeaderContainers[index];
-                header.PrepareContainerForCell(cell);
-            };
-
-            Object.defineProperty(GridHeadersPresenter.prototype, "LinkedItemsPanel", {
-                get: function () {
-                    var gic = this._LinkedItemsControl;
-                    if (!gic)
-                        return null;
-                    var presenter = gic.XamlNode.ItemsPresenter;
-                    if (!presenter)
-                        return null;
-                    return presenter.Panel;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            GridHeadersPresenter.prototype.LinkControl = function (gic) {
-                var _this = this;
-                this._LinkedItemsControl = gic;
-                gic.XamlNode.ListenForPresenterCreated(function (presenter) {
-                    return _this.FinishLinkControl(presenter);
-                });
-            };
-            GridHeadersPresenter.prototype.FinishLinkControl = function (presenter) {
-                var grid = this.Panel;
-                var linkedDefs = presenter.Panel.ColumnDefinitions;
-                for (var i = 0, defs = grid.ColumnDefinitions, len = defs.Count; i < len; i++) {
-                    defs.GetValueAt(i).Link(linkedDefs.GetValueAt(i));
-                }
-            };
-            GridHeadersPresenter.prototype.UnlinkControl = function (gic) {
-                if (!gic)
-                    return;
-                var grid = this.Panel;
-                for (var i = 0, defs = grid.ColumnDefinitions, len = defs.Count; i < len; i++) {
-                    defs.GetValueAt(i).Unlink();
-                }
-                this._LinkedItemsControl = null;
-            };
-            return GridHeadersPresenter;
-        })(Fayde.FrameworkElement);
-        Experimental.GridHeadersPresenter = GridHeadersPresenter;
-    })(Fayde.Experimental || (Fayde.Experimental = {}));
-    var Experimental = Fayde.Experimental;
-})(Fayde || (Fayde = {}));
-var Fayde;
-(function (Fayde) {
-    (function (Experimental) {
         var Grid = Fayde.Controls.Grid;
 
         var GridItemsControlNode = (function (_super) {
@@ -1248,6 +615,327 @@ var Fayde;
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
+        var GridCell = (function (_super) {
+            __extends(GridCell, _super);
+            function GridCell() {
+                _super.call(this);
+                this.DefaultStyleKey = this.constructor;
+            }
+            GridCell.prototype.OnIsEditingChanged = function (oldIsEditing, newIsEditing) {
+                this.UpdateVisualState();
+            };
+            GridCell.prototype.OnIsEditableChanged = function (oldIsEditable, newIsEditable) {
+                this.UpdateVisualState();
+            };
+
+            GridCell.prototype.OnApplyTemplate = function () {
+                this.UpdateVisualState();
+                _super.prototype.OnApplyTemplate.call(this);
+            };
+
+            GridCell.prototype.GoToStates = function (gotoFunc) {
+                _super.prototype.GoToStates.call(this, gotoFunc);
+                this.GoToStateEditing(gotoFunc);
+            };
+            GridCell.prototype.GoToStateEditing = function (gotoFunc) {
+                return gotoFunc(this.IsEditing ? (this.IsEditable ? "Edit" : "NotEditable") : "Display");
+            };
+            GridCell.IsEditingProperty = DependencyProperty.Register("IsEditing", function () {
+                return Boolean;
+            }, GridCell, false, function (d, args) {
+                return d.OnIsEditingChanged(args.OldValue, args.NewValue);
+            });
+            GridCell.IsEditableProperty = DependencyProperty.Register("IsEditable", function () {
+                return Boolean;
+            }, GridCell, false, function (d, args) {
+                return d.OnIsEditableChanged(args.OldValue, args.NewValue);
+            });
+            GridCell.EditTemplateProperty = DependencyProperty.Register("EditTemplate", function () {
+                return Fayde.DataTemplate;
+            }, GridCell);
+            return GridCell;
+        })(Fayde.Controls.ContentControl);
+        Experimental.GridCell = GridCell;
+        Fayde.Controls.TemplateVisualStates(GridCell, { GroupName: "EditStates", Name: "Display" }, { GroupName: "EditStates", Name: "Edit" }, { GroupName: "EditStates", Name: "NotEditable" });
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        (function (Internal) {
+            var ItemChangedCollection = (function (_super) {
+                __extends(ItemChangedCollection, _super);
+                function ItemChangedCollection() {
+                    _super.apply(this, arguments);
+                    this.ItemChanged = new MulticastEvent();
+                    this.CollectionChanged = new MulticastEvent();
+                }
+                ItemChangedCollection.prototype._RaiseItemAdded = function (value, index) {
+                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Add(value, index));
+                };
+                ItemChangedCollection.prototype._RaiseItemRemoved = function (value, index) {
+                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Remove(value, index));
+                };
+                ItemChangedCollection.prototype._RaiseItemReplaced = function (removed, added, index) {
+                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Replace(added, removed, index));
+                };
+                ItemChangedCollection.prototype._RaiseCleared = function (old) {
+                    this.CollectionChanged.Raise(this, Fayde.Collections.CollectionChangedEventArgs.Reset(old));
+                };
+                return ItemChangedCollection;
+            })(Fayde.XamlObjectCollection);
+            Internal.ItemChangedCollection = ItemChangedCollection;
+
+            var ItemChangedEventArgs = (function (_super) {
+                __extends(ItemChangedEventArgs, _super);
+                function ItemChangedEventArgs(t) {
+                    _super.call(this);
+                    Object.defineProperty(this, "Item", { value: t, writable: false });
+                }
+                return ItemChangedEventArgs;
+            })(EventArgs);
+            Internal.ItemChangedEventArgs = ItemChangedEventArgs;
+        })(Experimental.Internal || (Experimental.Internal = {}));
+        var Internal = Experimental.Internal;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridLength = Fayde.Controls.GridLength;
+        var ColumnDefinition = Fayde.Controls.ColumnDefinition;
+        var ContentControl = Fayde.Controls.ContentControl;
+
+        var GridColumn = (function (_super) {
+            __extends(GridColumn, _super);
+            function GridColumn() {
+                _super.apply(this, arguments);
+                this._Definition = null;
+                this._ActualWidthListener = null;
+            }
+            GridColumn.prototype.GetContainerForCell = function (item) {
+                return new Experimental.GridCell();
+            };
+            GridColumn.prototype.PrepareContainerForCell = function (cell, item) {
+                var binding;
+
+                if (cell instanceof Fayde.FrameworkElement) {
+                    binding = new Fayde.Data.Binding("CellStyle");
+                    binding.Source = this;
+                    cell.SetBinding(Fayde.FrameworkElement.StyleProperty, binding);
+                }
+
+                if (cell instanceof ContentControl) {
+                    binding = new Fayde.Data.Binding("Source");
+                    binding.Source = this;
+
+                    binding.Converter = {
+                        Convert: function (value, targetType, parameter, culture) {
+                            if (value === undefined)
+                                return item;
+                            return value;
+                        },
+                        ConvertBack: function (value, targetType, parameter, culture) {
+                            return value;
+                        }
+                    };
+                    cell.SetBinding(ContentControl.ContentProperty, binding);
+                }
+
+                if (cell instanceof Experimental.GridCell) {
+                    binding = new Fayde.Data.Binding("IsEditable");
+                    binding.Source = this;
+                    cell.SetBinding(Experimental.GridCell.IsEditableProperty, binding);
+                }
+            };
+            GridColumn.prototype.ClearContainerForCell = function (cell, item) {
+                if (cell instanceof Fayde.FrameworkElement) {
+                    cell.ClearValue(Fayde.FrameworkElement.StyleProperty);
+                }
+                if (cell instanceof ContentControl) {
+                    cell.ClearValue(ContentControl.ContentProperty);
+                }
+                if (cell instanceof Experimental.GridCell) {
+                    cell.ClearValue(Experimental.GridCell.IsEditableProperty);
+                }
+            };
+
+            GridColumn.prototype.AttachToDefinition = function (coldef) {
+                this._Definition = coldef;
+                if (!coldef)
+                    return;
+
+                var binding = new Fayde.Data.Binding("Width");
+                binding.Source = this;
+                binding.Mode = 1 /* OneWay */;
+                binding.Converter = new EmptyWidthConverter();
+                coldef.SetBinding(ColumnDefinition.WidthProperty, binding);
+
+                binding = new Fayde.Data.Binding("MaxWidth");
+                binding.Source = this;
+                binding.Mode = 1 /* OneWay */;
+                coldef.SetBinding(ColumnDefinition.MaxWidthProperty, binding);
+
+                binding = new Fayde.Data.Binding("MinWidth");
+                binding.Source = this;
+                binding.Mode = 1 /* OneWay */;
+                coldef.SetBinding(ColumnDefinition.MinWidthProperty, binding);
+
+                this._ActualWidthListener = ColumnDefinition.ActualWidthProperty.Store.ListenToChanged(coldef, ColumnDefinition.ActualWidthProperty, this._OnActualWidthChanged, this);
+            };
+            GridColumn.prototype._OnActualWidthChanged = function (sender, args) {
+                this.SetCurrentValue(ColumnDefinition.ActualWidthProperty, args.NewValue);
+            };
+            GridColumn.prototype.DetachDefinition = function () {
+                var awl = this._ActualWidthListener;
+                var coldef = this._Definition;
+                this._ActualWidthListener = null;
+                this._Definition = null;
+                if (awl)
+                    awl.Detach();
+                if (coldef) {
+                    coldef.ClearValue(ColumnDefinition.WidthProperty);
+                    coldef.ClearValue(ColumnDefinition.MaxWidthProperty);
+                    coldef.ClearValue(ColumnDefinition.MinWidthProperty);
+                }
+            };
+            GridColumn.WidthProperty = DependencyProperty.Register("Width", function () {
+                return GridLength;
+            }, GridColumn);
+            GridColumn.MaxWidthProperty = DependencyProperty.Register("MaxWidth", function () {
+                return Number;
+            }, GridColumn, Number.POSITIVE_INFINITY);
+            GridColumn.MinWidthProperty = DependencyProperty.Register("MinWidth", function () {
+                return Number;
+            }, GridColumn, 0.0);
+            GridColumn.ActualWidthProperty = DependencyProperty.RegisterReadOnly("ActualWidth", function () {
+                return Number;
+            }, GridColumn, 0.0);
+            GridColumn.CellStyleProperty = DependencyProperty.Register("CellStyle", function () {
+                return Fayde.Style;
+            }, GridColumn);
+            GridColumn.SourceProperty = DependencyProperty.Register("Source", function () {
+                return Fayde.Data.Binding;
+            }, GridColumn);
+            GridColumn.IsEditableProperty = DependencyProperty.Register("IsEditable", function () {
+                return Boolean;
+            }, GridColumn, false);
+            return GridColumn;
+        })(Fayde.DependencyObject);
+        Experimental.GridColumn = GridColumn;
+
+        var GridColumnCollection = (function (_super) {
+            __extends(GridColumnCollection, _super);
+            function GridColumnCollection() {
+                _super.apply(this, arguments);
+            }
+            return GridColumnCollection;
+        })(Experimental.Internal.ItemChangedCollection);
+        Experimental.GridColumnCollection = GridColumnCollection;
+
+        var EmptyWidthConverter = (function () {
+            function EmptyWidthConverter() {
+            }
+            EmptyWidthConverter.prototype.Convert = function (value, targetType, parameter, culture) {
+                if (!value)
+                    return "auto";
+                return value;
+            };
+            EmptyWidthConverter.prototype.ConvertBack = function (value, targetType, parameter, culture) {
+            };
+            return EmptyWidthConverter;
+        })();
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridColumnChangedEventArgs = (function (_super) {
+            __extends(GridColumnChangedEventArgs, _super);
+            function GridColumnChangedEventArgs(col) {
+                _super.call(this);
+                Object.defineProperty(this, "GridColumn", { value: col, writable: false });
+            }
+            return GridColumnChangedEventArgs;
+        })(EventArgs);
+        Experimental.GridColumnChangedEventArgs = GridColumnChangedEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridInputColumn = (function (_super) {
+            __extends(GridInputColumn, _super);
+            function GridInputColumn() {
+                _super.apply(this, arguments);
+            }
+            GridInputColumn.prototype.PrepareContainerForCell = function (cell, item) {
+                _super.prototype.PrepareContainerForCell.call(this, cell, item);
+
+                var binding;
+
+                if (cell instanceof Experimental.GridInputCell) {
+                    binding = new Fayde.Data.Binding("DisplayMemberPath");
+                    binding.Source = this;
+                    cell.SetBinding(Experimental.GridInputCell.DisplayMemberPathProperty, binding);
+
+                    binding = new Fayde.Data.Binding("Converter");
+                    binding.Source = this;
+                    cell.SetBinding(Experimental.GridInputCell.ConverterProperty, binding);
+
+                    binding = new Fayde.Data.Binding("StringFormat");
+                    binding.Source = this;
+                    cell.SetBinding(Experimental.GridInputCell.StringFormatProperty, binding);
+                }
+            };
+            GridInputColumn.prototype.ClearContainerForCell = function (cell, item) {
+                _super.prototype.ClearContainerForCell.call(this, cell, item);
+
+                if (cell instanceof Experimental.GridInputCell) {
+                    cell.ClearValue(Experimental.GridInputCell.DisplayMemberPathProperty);
+                    cell.ClearValue(Experimental.GridInputCell.ConverterProperty);
+                    cell.ClearValue(Experimental.GridInputCell.StringFormatProperty);
+                }
+            };
+            GridInputColumn.DisplayMemberPathProperty = DependencyProperty.Register("DisplayMemberPath", function () {
+                return String;
+            }, GridInputColumn);
+            GridInputColumn.ConverterProperty = DependencyProperty.Register("Converter", function () {
+                return Fayde.Data.IValueConverter_;
+            }, GridInputColumn);
+            GridInputColumn.StringFormatProperty = DependencyProperty.Register("StringFormat", function () {
+                return String;
+            }, GridInputColumn);
+            return GridInputColumn;
+        })(Experimental.GridColumn);
+        Experimental.GridInputColumn = GridInputColumn;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridTextColumn = (function (_super) {
+            __extends(GridTextColumn, _super);
+            function GridTextColumn() {
+                _super.apply(this, arguments);
+            }
+            GridTextColumn.prototype.GetContainerForCell = function (item) {
+                return new Experimental.GridTextCell();
+            };
+            return GridTextColumn;
+        })(Experimental.GridInputColumn);
+        Experimental.GridTextColumn = GridTextColumn;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
         var ContentControl = Fayde.Controls.ContentControl;
 
         var GridTemplateColumn = (function (_super) {
@@ -1270,10 +958,6 @@ var Fayde;
                     binding = new Fayde.Data.Binding("EditTemplate");
                     binding.Source = this;
                     cell.SetBinding(Experimental.GridCell.EditTemplateProperty, binding);
-
-                    binding = new Fayde.Data.Binding("IsEditable");
-                    binding.Source = this;
-                    cell.SetBinding(Experimental.GridCell.IsEditableProperty, binding);
                 }
             };
             GridTemplateColumn.prototype.ClearContainerForCell = function (cell, item) {
@@ -1293,9 +977,6 @@ var Fayde;
             GridTemplateColumn.EditTemplateProperty = DependencyProperty.Register("EditTemplate", function () {
                 return Fayde.DataTemplate;
             }, GridTemplateColumn);
-            GridTemplateColumn.IsEditableProperty = DependencyProperty.Register("IsEditable", function () {
-                return Boolean;
-            }, GridTemplateColumn, false);
             return GridTemplateColumn;
         })(Experimental.GridColumn);
         Experimental.GridTemplateColumn = GridTemplateColumn;
@@ -1305,132 +986,331 @@ var Fayde;
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
-        var TextBlock = Fayde.Controls.TextBlock;
-        var TextBox = Fayde.Controls.TextBox;
+        var ContentControl = Fayde.Controls.ContentControl;
 
-        var GridTextCell = (function (_super) {
-            __extends(GridTextCell, _super);
-            function GridTextCell() {
-                _super.call(this);
-                this._Presenter = null;
-                this._Editor = null;
-                this.DefaultStyleKey = this.constructor;
+        var GridHeader = (function (_super) {
+            __extends(GridHeader, _super);
+            function GridHeader() {
+                _super.apply(this, arguments);
             }
-            GridTextCell.prototype.OnDisplayMemberPathChanged = function (oldPath, newPath) {
-                this.UpdateDisplayMember();
+            GridHeader.prototype.GetContainerForCell = function () {
+                return new Experimental.GridHeaderCell();
             };
-            GridTextCell.prototype.OnConverterChanged = function (oldConverter, newConverter) {
-                this.UpdateDisplayMember();
-            };
-            GridTextCell.prototype.OnStringFormatChanged = function (oldFormat, newFormat) {
-                this.UpdateDisplayMember();
-            };
+            GridHeader.prototype.PrepareContainerForCell = function (cell) {
+                var gc = cell;
+                if (gc instanceof Experimental.GridHeaderCell) {
+                    var binding = new Fayde.Data.Binding("Header");
+                    binding.Source = this;
+                    gc.SetBinding(ContentControl.ContentProperty, binding);
 
-            GridTextCell.prototype.OnIsEditableChanged = function (oldIsEditable, newIsEditable) {
-                _super.prototype.OnIsEditableChanged.call(this, oldIsEditable, newIsEditable);
-                this.UpdateDisplayMember();
-            };
+                    binding = new Fayde.Data.Binding("HeaderTemplate");
+                    binding.Source = this;
+                    gc.SetBinding(ContentControl.ContentTemplateProperty, binding);
 
-            GridTextCell.prototype.OnApplyTemplate = function () {
-                _super.prototype.OnApplyTemplate.call(this);
-                this._Presenter = this.GetTemplateChild("PresentingTextBlock", TextBlock);
-                this._Editor = this.GetTemplateChild("EditingTextBox", TextBox);
-                this.UpdateDisplayMember();
-            };
-
-            GridTextCell.prototype.UpdateDisplayMember = function () {
-                var binding;
-                var path = this.DisplayMemberPath;
-
-                if (this._Presenter) {
-                    binding = new Fayde.Data.Binding(path);
-                    binding.Converter = this.Converter;
-                    binding.StringFormat = this.StringFormat;
-                    this._Presenter.SetBinding(TextBlock.TextProperty, binding);
-                }
-
-                if (this.IsEditable && this._Editor) {
-                    if (!path)
-                        throw new ArgumentException("DisplayMemberPath cannot be null for editable GridTextCell");
-                    binding = new Fayde.Data.Binding(path);
-                    binding.UpdateSourceTrigger = 1 /* PropertyChanged */;
-                    binding.Mode = 0 /* TwoWay */;
-                    binding.Converter = this.Converter;
-                    this._Editor.SetBinding(TextBox.TextProperty, binding);
+                    binding = new Fayde.Data.Binding("HeaderStyle");
+                    binding.Source = this;
+                    binding.Mode = 1 /* OneWay */;
+                    gc.SetBinding(Fayde.FrameworkElement.StyleProperty, binding);
                 }
             };
-            GridTextCell.DisplayMemberPathProperty = DependencyProperty.Register("DisplayMemberPath", function () {
-                return String;
-            }, GridTextCell, undefined, function (d, args) {
-                return d.OnDisplayMemberPathChanged(args.OldValue, args.NewValue);
-            });
-            GridTextCell.ConverterProperty = DependencyProperty.Register("Converter", function () {
-                return Fayde.Data.IValueConverter_;
-            }, GridTextCell);
-            GridTextCell.StringFormatProperty = DependencyProperty.Register("StringFormat", function () {
-                return String;
-            }, GridTextCell);
-            return GridTextCell;
-        })(Experimental.GridCell);
-        Experimental.GridTextCell = GridTextCell;
-        Fayde.Controls.TemplateParts(GridTextCell, { Name: "PresentingTextBlock", Type: TextBlock }, { Name: "EditingTextBox", Type: TextBox });
+            GridHeader.prototype.ClearContainerForCell = function (cell) {
+                var gc = cell;
+                if (gc instanceof Experimental.GridHeaderCell) {
+                    gc.ClearValue(ContentControl.ContentProperty);
+                    gc.ClearValue(ContentControl.ContentTemplateProperty);
+                    gc.ClearValue(Fayde.FrameworkElement.StyleProperty);
+                }
+            };
+            GridHeader.HeaderProperty = DependencyProperty.Register("Header", function () {
+                return Object;
+            }, GridHeader);
+            GridHeader.HeaderTemplateProperty = DependencyProperty.Register("HeaderTemplate", function () {
+                return Fayde.DataTemplate;
+            }, GridHeader);
+            GridHeader.HeaderStyleProperty = DependencyProperty.Register("HeaderStyle", function () {
+                return Fayde.Style;
+            }, GridHeader);
+            return GridHeader;
+        })(Fayde.DependencyObject);
+        Experimental.GridHeader = GridHeader;
+
+        var GridHeaderCollection = (function (_super) {
+            __extends(GridHeaderCollection, _super);
+            function GridHeaderCollection() {
+                _super.apply(this, arguments);
+            }
+            return GridHeaderCollection;
+        })(Experimental.Internal.ItemChangedCollection);
+        Experimental.GridHeaderCollection = GridHeaderCollection;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
-        var GridTextColumn = (function (_super) {
-            __extends(GridTextColumn, _super);
-            function GridTextColumn() {
-                _super.apply(this, arguments);
+        var GridHeadersControlNode = (function (_super) {
+            __extends(GridHeadersControlNode, _super);
+            function GridHeadersControlNode(xobj) {
+                _super.call(this, xobj);
+                this.HeadersPresenter = null;
             }
-            GridTextColumn.prototype.GetContainerForCell = function (item) {
-                return new Experimental.GridTextCell();
+            GridHeadersControlNode.prototype.GetDefaultVisualTree = function () {
+                var presenter = this.HeadersPresenter;
+                if (!presenter)
+                    (presenter = new Experimental.GridHeadersPresenter()).TemplateOwner = this.XObject;
+                return presenter;
             };
-            GridTextColumn.prototype.PrepareContainerForCell = function (cell, item) {
-                _super.prototype.PrepareContainerForCell.call(this, cell, item);
+            return GridHeadersControlNode;
+        })(Fayde.Controls.ControlNode);
+        Experimental.GridHeadersControlNode = GridHeadersControlNode;
 
-                var binding;
+        var GridHeadersControl = (function (_super) {
+            __extends(GridHeadersControl, _super);
+            function GridHeadersControl() {
+                _super.call(this);
+                this.DefaultStyleKey = this.constructor;
+                var coll = GridHeadersControl.HeadersProperty.Initialize(this);
+                coll.CollectionChanged.Subscribe(this._HeadersChanged, this);
+                coll.ItemChanged.Subscribe(this._HeaderChanged, this);
+            }
+            GridHeadersControl.prototype.CreateNode = function () {
+                return new GridHeadersControlNode(this);
+            };
 
-                if (cell instanceof Experimental.GridCell) {
-                    binding = new Fayde.Data.Binding("IsEditable");
-                    binding.Source = this;
-                    cell.SetBinding(Experimental.GridCell.IsEditableProperty, binding);
+            GridHeadersControl.prototype.OnItemsControlChanged = function (args) {
+                var presenter = this.XamlNode.HeadersPresenter;
+                if (!presenter)
+                    return;
+                presenter.UnlinkControl(args.OldValue);
+                presenter.LinkControl(args.NewValue);
+            };
+
+            GridHeadersControl.prototype._HeadersChanged = function (sender, e) {
+                var presenter = this.XamlNode.HeadersPresenter;
+                if (!presenter)
+                    return;
+                switch (e.Action) {
+                    case 1 /* Add */:
+                        for (var i = 0, len = e.NewItems.length; i < len; i++) {
+                            presenter.OnHeaderAdded(e.NewStartingIndex + i, e.NewItems[i]);
+                        }
+                        break;
+                    case 2 /* Remove */:
+                        for (var i = 0, len = e.OldItems.length; i < len; i++) {
+                            presenter.OnHeaderRemoved(e.OldStartingIndex + i);
+                        }
+                        break;
+                    case 3 /* Replace */:
+                        presenter.OnHeaderRemoved(e.NewStartingIndex);
+                        presenter.OnHeaderAdded(e.NewStartingIndex, e.NewItems[i]);
+                        break;
+                    case 4 /* Reset */:
+                        presenter.OnHeadersCleared();
+                        break;
+                }
+            };
+            GridHeadersControl.prototype._HeaderChanged = function (sender, e) {
+                var presenter = this.XamlNode.HeadersPresenter;
+                if (!presenter)
+                    return;
+                presenter.OnHeaderChanged(e.Item);
+            };
+            GridHeadersControl.ItemsControlProperty = DependencyProperty.Register("ItemsControl", function () {
+                return Experimental.GridItemsControl;
+            }, GridHeadersControl, undefined, function (d, args) {
+                return d.OnItemsControlChanged(args);
+            });
+
+            GridHeadersControl.HeadersProperty = DependencyProperty.RegisterImmutable("Headers", function () {
+                return Experimental.GridHeaderCollection;
+            }, GridHeadersControl);
+            return GridHeadersControl;
+        })(Fayde.Controls.Control);
+        Experimental.GridHeadersControl = GridHeadersControl;
+        Fayde.Xaml.Content(GridHeadersControl, GridHeadersControl.HeadersProperty);
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridHeaderChangedEventArgs = (function (_super) {
+            __extends(GridHeaderChangedEventArgs, _super);
+            function GridHeaderChangedEventArgs(header) {
+                _super.call(this);
+                Object.defineProperty(this, "GridHeader", { value: header, writable: false });
+            }
+            return GridHeaderChangedEventArgs;
+        })(EventArgs);
+        Experimental.GridHeaderChangedEventArgs = GridHeaderChangedEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var Grid = Fayde.Controls.Grid;
+
+        var GridHeadersPresenterNode = (function (_super) {
+            __extends(GridHeadersPresenterNode, _super);
+            function GridHeadersPresenterNode(xobj) {
+                _super.call(this, xobj);
+            }
+            Object.defineProperty(GridHeadersPresenterNode.prototype, "ElementRoot", {
+                get: function () {
+                    return this._ElementRoot;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            GridHeadersPresenterNode.prototype.DoApplyTemplateWithError = function (error) {
+                if (this._ElementRoot)
+                    return false;
+
+                var xobj = this.XObject;
+                var ghc = xobj.TemplateOwner;
+                if (!(ghc instanceof Experimental.GridHeadersControl))
+                    return false;
+
+                this._ElementRoot = new Grid();
+
+                if (!this.FinishApplyTemplateWithError(this._ElementRoot, error))
+                    return false;
+                ghc.XamlNode.HeadersPresenter = xobj;
+                for (var i = 0, headers = ghc.Headers.ToArray(), len = headers.length; i < len; i++) {
+                    xobj.OnHeaderAdded(i, headers[i]);
+                }
+                xobj.LinkControl(ghc.ItemsControl);
+                return true;
+            };
+            return GridHeadersPresenterNode;
+        })(Fayde.FENode);
+        Experimental.GridHeadersPresenterNode = GridHeadersPresenterNode;
+
+        var GridHeadersPresenter = (function (_super) {
+            __extends(GridHeadersPresenter, _super);
+            function GridHeadersPresenter() {
+                _super.apply(this, arguments);
+                this._Headers = [];
+                this._HeaderContainers = [];
+                this._LinkedItemsControl = null;
+            }
+            GridHeadersPresenter.prototype.CreateNode = function () {
+                return new GridHeadersPresenterNode(this);
+            };
+
+            Object.defineProperty(GridHeadersPresenter.prototype, "GridHeadersControl", {
+                get: function () {
+                    return this.TemplateOwner instanceof Experimental.GridHeadersControl ? this.TemplateOwner : null;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(GridHeadersPresenter.prototype, "Panel", {
+                get: function () {
+                    return this.XamlNode.ElementRoot;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            GridHeadersPresenter.prototype.OnHeaderAdded = function (index, header) {
+                this._Headers.splice(index, 0, header);
+
+                var grid = this.Panel;
+                var coldef = new Experimental.HeaderColumnDefinition();
+                grid.ColumnDefinitions.Insert(index, coldef);
+                var linkedGrid = this.LinkedItemsPanel;
+                if (linkedGrid)
+                    coldef.Link(linkedGrid.ColumnDefinitions.GetValueAt(index));
+
+                var containers = this._HeaderContainers;
+                var cell = header.GetContainerForCell();
+                containers.splice(index, 0, cell);
+                header.PrepareContainerForCell(cell);
+
+                for (var i = index, len = containers.length; i < len; i++) {
+                    Grid.SetColumn(containers[i], i);
                 }
 
-                if (cell instanceof Experimental.GridTextCell) {
-                    binding = new Fayde.Data.Binding("DisplayMemberPath");
-                    binding.Source = this;
-                    cell.SetBinding(Experimental.GridTextCell.DisplayMemberPathProperty, binding);
+                grid.Children.Insert(index, cell);
+            };
+            GridHeadersPresenter.prototype.OnHeaderRemoved = function (index) {
+                var header = this._Headers[index];
+                var containers = this._HeaderContainers;
+                var grid = this.Panel;
+                var coldefs = grid.ColumnDefinitions;
 
-                    binding = new Fayde.Data.Binding("Converter");
-                    binding.Source = this;
-                    cell.SetBinding(Experimental.GridTextCell.ConverterProperty, binding);
+                var cell = containers.splice(index, 1)[0];
+                header.ClearContainerForCell(cell);
+                grid.Children.RemoveAt(index);
 
-                    binding = new Fayde.Data.Binding("StringFormat");
-                    binding.Source = this;
-                    cell.SetBinding(Experimental.GridTextCell.StringFormatProperty, binding);
+                coldefs.GetValueAt(index).Unlink();
+                coldefs.RemoveAt(index);
+
+                for (var i = index, len = containers.length; i < len; i++) {
+                    Grid.SetColumn(containers[i], i);
                 }
             };
-            GridTextColumn.prototype.ClearContainerForCell = function (cell, item) {
-                _super.prototype.ClearContainerForCell.call(this, cell, item);
+            GridHeadersPresenter.prototype.OnHeadersCleared = function () {
+                var grid = this.Panel;
+                var coldefs = grid.ColumnDefinitions;
+                for (var i = 0, headers = this._Headers, containers = this._HeaderContainers, len = containers.length; i < len; i++) {
+                    var header = headers[i];
+                    header.ClearContainerForCell(containers[i]);
+                    coldefs.GetValueAt(i).Unlink();
+                }
+                coldefs.Clear();
+                grid.Children.Clear();
+                this._Headers.length = 0;
+                this._HeaderContainers.length = 0;
             };
-            GridTextColumn.DisplayMemberPathProperty = DependencyProperty.Register("DisplayMemberPath", function () {
-                return String;
-            }, GridTextColumn);
-            GridTextColumn.ConverterProperty = DependencyProperty.Register("Converter", function () {
-                return Fayde.Data.IValueConverter_;
-            }, GridTextColumn);
-            GridTextColumn.StringFormatProperty = DependencyProperty.Register("StringFormat", function () {
-                return String;
-            }, GridTextColumn);
-            GridTextColumn.IsEditableProperty = DependencyProperty.Register("IsEditable", function () {
-                return Boolean;
-            }, GridTextColumn, false);
-            return GridTextColumn;
-        })(Experimental.GridColumn);
-        Experimental.GridTextColumn = GridTextColumn;
+            GridHeadersPresenter.prototype.OnHeaderChanged = function (header) {
+                var index = this._Headers.indexOf(header);
+                var cell = this._HeaderContainers[index];
+                header.PrepareContainerForCell(cell);
+            };
+
+            Object.defineProperty(GridHeadersPresenter.prototype, "LinkedItemsPanel", {
+                get: function () {
+                    var gic = this._LinkedItemsControl;
+                    if (!gic)
+                        return null;
+                    var presenter = gic.XamlNode.ItemsPresenter;
+                    if (!presenter)
+                        return null;
+                    return presenter.Panel;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            GridHeadersPresenter.prototype.LinkControl = function (gic) {
+                var _this = this;
+                this._LinkedItemsControl = gic;
+                gic.XamlNode.ListenForPresenterCreated(function (presenter) {
+                    return _this.FinishLinkControl(presenter);
+                });
+            };
+            GridHeadersPresenter.prototype.FinishLinkControl = function (presenter) {
+                var grid = this.Panel;
+                var linkedDefs = presenter.Panel.ColumnDefinitions;
+                for (var i = 0, defs = grid.ColumnDefinitions, len = defs.Count; i < len; i++) {
+                    defs.GetValueAt(i).Link(linkedDefs.GetValueAt(i));
+                }
+            };
+            GridHeadersPresenter.prototype.UnlinkControl = function (gic) {
+                if (!gic)
+                    return;
+                var grid = this.Panel;
+                for (var i = 0, defs = grid.ColumnDefinitions, len = defs.Count; i < len; i++) {
+                    defs.GetValueAt(i).Unlink();
+                }
+                this._LinkedItemsControl = null;
+            };
+            return GridHeadersPresenter;
+        })(Fayde.FrameworkElement);
+        Experimental.GridHeadersPresenter = GridHeadersPresenter;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
@@ -1487,6 +1367,21 @@ var Fayde;
             return HeaderColumnDefinition;
         })(Fayde.Controls.ColumnDefinition);
         Experimental.HeaderColumnDefinition = HeaderColumnDefinition;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridHeaderCell = (function (_super) {
+            __extends(GridHeaderCell, _super);
+            function GridHeaderCell() {
+                _super.call(this);
+                this.DefaultStyleKey = this.constructor;
+            }
+            return GridHeaderCell;
+        })(Fayde.Controls.ContentControl);
+        Experimental.GridHeaderCell = GridHeaderCell;
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
@@ -1743,6 +1638,225 @@ var Fayde;
             return SelectionChangedEventArgs;
         })(EventArgs);
         Experimental.SelectionChangedEventArgs = SelectionChangedEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var EditingChangedEventArgs = (function (_super) {
+            __extends(EditingChangedEventArgs, _super);
+            function EditingChangedEventArgs(item, row) {
+                _super.call(this);
+                Object.defineProperty(this, "Item", { value: item, writable: false });
+                Object.defineProperty(this, "Row", { value: row, writable: false });
+            }
+            return EditingChangedEventArgs;
+        })(EventArgs);
+        Experimental.EditingChangedEventArgs = EditingChangedEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var CellMouseButtonEventArgs = (function (_super) {
+            __extends(CellMouseButtonEventArgs, _super);
+            function CellMouseButtonEventArgs(cell, args) {
+                _super.call(this, args.AbsolutePos);
+                Object.defineProperty(this, "Cell", { value: cell, writable: false });
+            }
+            return CellMouseButtonEventArgs;
+        })(Fayde.Input.MouseButtonEventArgs);
+        Experimental.CellMouseButtonEventArgs = CellMouseButtonEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var CellMouseEventArgs = (function (_super) {
+            __extends(CellMouseEventArgs, _super);
+            function CellMouseEventArgs(cell, args) {
+                _super.call(this, args.AbsolutePos);
+                Object.defineProperty(this, "Cell", { value: cell, writable: false });
+            }
+            return CellMouseEventArgs;
+        })(Fayde.Input.MouseEventArgs);
+        Experimental.CellMouseEventArgs = CellMouseEventArgs;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridInputCell = (function (_super) {
+            __extends(GridInputCell, _super);
+            function GridInputCell() {
+                _super.apply(this, arguments);
+                this._Presenter = null;
+                this._Editor = null;
+            }
+            GridInputCell.prototype.OnDisplayPropertyChanged = function (oldProperty, newProperty) {
+                this.UpdateDisplayMember();
+            };
+            GridInputCell.prototype.OnEditPropertyChanged = function (oldProperty, newProperty) {
+                this.UpdateDisplayMember();
+            };
+            GridInputCell.prototype.OnDisplayMemberPathChanged = function (oldPath, newPath) {
+                this.UpdateDisplayMember();
+            };
+            GridInputCell.prototype.OnConverterChanged = function (oldConverter, newConverter) {
+                this.UpdateDisplayMember();
+            };
+            GridInputCell.prototype.OnStringFormatChanged = function (oldFormat, newFormat) {
+                this.UpdateDisplayMember();
+            };
+
+            GridInputCell.prototype.OnIsEditableChanged = function (oldIsEditable, newIsEditable) {
+                _super.prototype.OnIsEditableChanged.call(this, oldIsEditable, newIsEditable);
+                this.UpdateDisplayMember();
+            };
+
+            GridInputCell.prototype.OnApplyTemplate = function () {
+                _super.prototype.OnApplyTemplate.call(this);
+                this._Presenter = this.GetTemplateChild("Presenter", Fayde.FrameworkElement);
+                this._Editor = this.GetTemplateChild("Editor", Fayde.FrameworkElement);
+                this.UpdateDisplayMember();
+            };
+
+            GridInputCell.prototype.UpdateDisplayMember = function () {
+                var binding;
+                var path = this.DisplayMemberPath;
+                var propd;
+
+                if (this._Presenter) {
+                    binding = new Fayde.Data.Binding(path);
+                    binding.Converter = this.Converter;
+                    binding.StringFormat = this.StringFormat;
+
+                    propd = DependencyProperty.GetDependencyProperty(this._Presenter.constructor, this.DisplayProperty);
+                    this._Presenter.SetBinding(propd, binding);
+                }
+
+                if (this.IsEditable && this._Editor) {
+                    if (!path)
+                        throw new ArgumentException("DisplayMemberPath cannot be null for editable GridInputCell");
+                    binding = new Fayde.Data.Binding(path);
+                    binding.UpdateSourceTrigger = 1 /* PropertyChanged */;
+                    binding.Mode = 0 /* TwoWay */;
+                    binding.Converter = this.Converter;
+
+                    propd = DependencyProperty.GetDependencyProperty(this._Editor.constructor, this.EditProperty);
+                    this._Editor.SetBinding(propd, binding);
+                }
+            };
+            GridInputCell.DisplayPropertyProperty = DependencyProperty.Register("DisplayProperty", function () {
+                return String;
+            }, GridInputCell, "Text");
+            GridInputCell.EditPropertyProperty = DependencyProperty.Register("EditProperty", function () {
+                return String;
+            }, GridInputCell, "Text");
+            GridInputCell.DisplayMemberPathProperty = DependencyProperty.Register("DisplayMemberPath", function () {
+                return String;
+            }, GridInputCell, undefined, function (d, args) {
+                return d.OnDisplayMemberPathChanged(args.OldValue, args.NewValue);
+            });
+            GridInputCell.ConverterProperty = DependencyProperty.Register("Converter", function () {
+                return Fayde.Data.IValueConverter_;
+            }, GridInputCell);
+            GridInputCell.StringFormatProperty = DependencyProperty.Register("StringFormat", function () {
+                return String;
+            }, GridInputCell);
+            return GridInputCell;
+        })(Experimental.GridCell);
+        Experimental.GridInputCell = GridInputCell;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridTextCell = (function (_super) {
+            __extends(GridTextCell, _super);
+            function GridTextCell() {
+                _super.call(this);
+                this.DefaultStyleKey = this.constructor;
+            }
+            return GridTextCell;
+        })(Experimental.GridInputCell);
+        Experimental.GridTextCell = GridTextCell;
+        Fayde.Controls.TemplateParts(GridTextCell, { Name: "Presenter", Type: Fayde.FrameworkElement }, { Name: "Editor", Type: Fayde.FrameworkElement });
+        Fayde.Controls.TemplateVisualStates(GridTextCell, { GroupName: "EditStates", Name: "Display" }, { GroupName: "EditStates", Name: "Edit" }, { GroupName: "EditStates", Name: "NotEditable" });
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridNumericColumn = (function (_super) {
+            __extends(GridNumericColumn, _super);
+            function GridNumericColumn() {
+                _super.apply(this, arguments);
+            }
+            GridNumericColumn.prototype.GetContainerForCell = function (item) {
+                return new Experimental.GridNumericCell();
+            };
+            return GridNumericColumn;
+        })(Experimental.GridInputColumn);
+        Experimental.GridNumericColumn = GridNumericColumn;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridDateColumn = (function (_super) {
+            __extends(GridDateColumn, _super);
+            function GridDateColumn() {
+                _super.apply(this, arguments);
+            }
+            GridDateColumn.prototype.GetContainerForCell = function (item) {
+                return new Experimental.GridDateCell();
+            };
+            return GridDateColumn;
+        })(Experimental.GridInputColumn);
+        Experimental.GridDateColumn = GridDateColumn;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridDateCell = (function (_super) {
+            __extends(GridDateCell, _super);
+            function GridDateCell() {
+                _super.call(this);
+                this.DefaultStyleKey = this.constructor;
+            }
+            return GridDateCell;
+        })(Experimental.GridInputCell);
+        Experimental.GridDateCell = GridDateCell;
+        Fayde.Controls.TemplateParts(GridDateCell, { Name: "Presenter", Type: Fayde.FrameworkElement }, { Name: "Editor", Type: Fayde.FrameworkElement });
+        Fayde.Controls.TemplateVisualStates(GridDateCell, { GroupName: "EditStates", Name: "Display" }, { GroupName: "EditStates", Name: "Edit" }, { GroupName: "EditStates", Name: "NotEditable" });
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridNumericCell = (function (_super) {
+            __extends(GridNumericCell, _super);
+            function GridNumericCell() {
+                _super.call(this);
+                this.DefaultStyleKey = this.constructor;
+                this.EditProperty = "Value";
+            }
+            return GridNumericCell;
+        })(Experimental.GridInputCell);
+        Experimental.GridNumericCell = GridNumericCell;
+        Fayde.Controls.TemplateParts(GridNumericCell, { Name: "Presenter", Type: Fayde.FrameworkElement }, { Name: "Editor", Type: Fayde.FrameworkElement });
+        Fayde.Controls.TemplateVisualStates(GridNumericCell, { GroupName: "EditStates", Name: "Display" }, { GroupName: "EditStates", Name: "Edit" }, { GroupName: "EditStates", Name: "NotEditable" });
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
