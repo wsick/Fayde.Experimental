@@ -1845,6 +1845,40 @@ var Fayde;
 var Fayde;
 (function (Fayde) {
     (function (Experimental) {
+        var GridTimeCell = (function (_super) {
+            __extends(GridTimeCell, _super);
+            function GridTimeCell() {
+                _super.call(this);
+                this.DefaultStyleKey = this.constructor;
+            }
+            return GridTimeCell;
+        })(Experimental.GridInputCell);
+        Experimental.GridTimeCell = GridTimeCell;
+        Fayde.Controls.TemplateParts(Experimental.GridDateCell, { Name: "Presenter", Type: Fayde.FrameworkElement }, { Name: "Editor", Type: Fayde.FrameworkElement });
+        Fayde.Controls.TemplateVisualStates(Experimental.GridDateCell, { GroupName: "EditStates", Name: "Display" }, { GroupName: "EditStates", Name: "Edit" }, { GroupName: "EditStates", Name: "NotEditable" });
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
+        var GridTimeColumn = (function (_super) {
+            __extends(GridTimeColumn, _super);
+            function GridTimeColumn() {
+                _super.apply(this, arguments);
+            }
+            GridTimeColumn.prototype.GetContainerForCell = function (item) {
+                return new Experimental.GridTimeCell();
+            };
+            return GridTimeColumn;
+        })(Experimental.GridInputColumn);
+        Experimental.GridTimeColumn = GridTimeColumn;
+    })(Fayde.Experimental || (Fayde.Experimental = {}));
+    var Experimental = Fayde.Experimental;
+})(Fayde || (Fayde = {}));
+var Fayde;
+(function (Fayde) {
+    (function (Experimental) {
         var GridNumericCell = (function (_super) {
             __extends(GridNumericCell, _super);
             function GridNumericCell() {

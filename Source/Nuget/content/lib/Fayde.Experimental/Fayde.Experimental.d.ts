@@ -388,6 +388,16 @@ declare module Fayde.Experimental {
     }
 }
 declare module Fayde.Experimental {
+    class GridTimeCell extends GridInputCell {
+        constructor();
+    }
+}
+declare module Fayde.Experimental {
+    class GridTimeColumn extends GridInputColumn {
+        public GetContainerForCell(item: any): GridTimeCell;
+    }
+}
+declare module Fayde.Experimental {
     class GridNumericCell extends GridInputCell {
         constructor();
     }
