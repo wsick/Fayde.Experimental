@@ -99,7 +99,9 @@
     <TypeScriptCompile Include="Columns\GridNumericColumn.ts" />
     <TypeScriptCompile Include="Columns\GridDateColumn.ts" />
     <TypeScriptCompile Include="Cells\GridDateCell.ts" />
-    <Content Include="lib\Fayde.Controls\Fayde.Controls.d.ts" />
+    <TypeScriptCompile Include="Cells\GridTimeCell.ts" />
+    <TypeScriptCompile Include="Columns\GridTimeColumn.ts" />
+    <TypeScriptCompile Include="lib\Fayde.Controls\Fayde.Controls.d.ts" />
     <TypeScriptCompile Include="Columns\GridInputColumn.ts" />
     <TypeScriptCompile Include="Cells\GridInputCell.ts" />
     <TypeScriptCompile Include="Cells\GridNumericCell.ts" />

@@ -9,8 +9,8 @@
         <description>Experimental Controls library for Fayde.</description>
         <tags>fayde xaml silverlight</tags>
         <dependencies>
-            <dependency id="Fayde" version="0.9.8.41" />
-            <dependency id="Fayde.Controls" version="0.9.8.12" />
+            <dependency id="Fayde" version="0.9.8.43" />
+            <dependency id="Fayde.Controls" version="0.9.8.13" />
         </dependencies>
     </metadata>
     <files>

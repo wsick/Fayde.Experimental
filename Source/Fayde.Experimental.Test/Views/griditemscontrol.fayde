@@ -51,6 +51,7 @@
             <exp:GridTextColumn DisplayMemberPath="LastName" IsEditable="true" />
             <exp:GridNumericColumn DisplayMemberPath="Age" IsEditable="true" CellStyle="{StaticResource GridCellStyle}" />
             <exp:GridDateColumn DisplayMemberPath="SpecialDay" IsEditable="true" StringFormat="{0:d}" CellStyle="{StaticResource GridCellStyle}" />
+            <exp:GridTimeColumn DisplayMemberPath="CreateTime" IsEditable="true" StringFormat="{0:hh\:mm}" CellStyle="{StaticResource GridCellStyle}" />
         </exp:GridItemsControl>
     </Grid>
 </Page>

@@ -1,3 +1,43 @@
+﻿declare module Fayde.Controls {
+    class TimePicker extends Control {
+        static SelectedHourProperty: DependencyProperty;
+        static SelectedMinuteProperty: DependencyProperty;
+        static SelectedSecondProperty: DependencyProperty;
+        static SelectedTimeProperty: DependencyProperty;
+        static IsSecondsShownProperty: DependencyProperty;
+        static DisplayModeProperty: DependencyProperty;
+        public SelectedHour: number;
+        public SelectedMinute: number;
+        public SelectedSecond: number;
+        public SelectedTime: TimeSpan;
+        public IsSecondsShown: boolean;
+        public DisplayMode: TimeDisplayMode;
+        private OnSelectedHourChanged(args);
+        private OnSelectedMinuteChanged(args);
+        private OnSelectedSecondChanged(args);
+        private OnSelectedTimeChanged(args);
+        private OnDisplayModeChanged(args);
+        private _HourTextBox;
+        private _MinuteTextBox;
+        private _SecondTextBox;
+        private _SecondSeparator;
+        private _SuffixTextBlock;
+        private _HourGesture;
+        private _MinuteGesture;
+        private _SecondGesture;
+        private _SuffixGesture;
+        private _SelectionHandler;
+        constructor();
+        public OnApplyTemplate(): void;
+        private _GetHourInput();
+        private CoerceHour(hour);
+        private CoerceMinute(minute);
+        private CoerceSecond(second);
+        private CoerceTime();
+        private ToggleAmPm();
+        private _UpdateText();
+    }
+}
 declare module Fayde.Controls {
     class GridSplitter extends Control {
         private _Helper;
@@ -222,6 +262,59 @@ declare module Fayde.Controls.Internal {
     }
 }
 declare module Fayde.Controls {
+    class DatePicker extends Control {
+        static SelectedMonthProperty: DependencyProperty;
+        static SelectedDayProperty: DependencyProperty;
+        static SelectedYearProperty: DependencyProperty;
+        static SelectedDateProperty: DependencyProperty;
+        public SelectedMonth: number;
+        public SelectedDay: number;
+        public SelectedYear: number;
+        public SelectedDate: DateTime;
+        private OnSelectedMonthChanged(args);
+        private OnSelectedDayChanged(args);
+        private OnSelectedYearChanged(args);
+        private OnSelectedDateChanged(args);
+        private _MonthTextBox;
+        private _DayTextBox;
+        private _YearTextBox;
+        private _MonthGesture;
+        private _DayGesture;
+        private _YearGesture;
+        private _SelectionHandler;
+        constructor();
+        public OnApplyTemplate(): void;
+        private CoerceMonth(month);
+        private CoerceDay(day);
+        private CoerceYear(year);
+        private CoerceDate();
+        private _UpdateText();
+    }
+}
+declare module Fayde.Controls.Internal {
+    class SelectionHandler {
+        private _ActiveBox;
+        public ActiveBox : TextBox;
+        private _IsMouseDown;
+        private _TextBoxes;
+        constructor(textBoxes: TextBox[]);
+        public Dispose(): void;
+        private _GotFocus(sender, e);
+        private _MouseDown(sender, e);
+        private _MouseUp(sender, e);
+        private _LostFocus(sender, e);
+    }
+}
+declare module Fayde.Controls.Internal {
+    class EventGesture<T extends UIElement> {
+        public Target: UIElement;
+        private _Callback;
+        public Attach(event: MulticastEvent<EventArgs>, callback: (t: T, e: EventArgs) => void): void;
+        public Detach(): void;
+        private _OnEvent(sender, e);
+    }
+}
+declare module Fayde.Controls {
     class Spinner extends ContentControl {
         static ValidSpinDirectionProperty: DependencyProperty;
         public ValidSpinDirection: ValidSpinDirections;
@@ -425,6 +518,14 @@ declare module Fayde.Controls {
         Top = 1,
         Right = 2,
         Bottom = 3,
+    }
+    enum DatePickerFormat {
+        Long = 0,
+        Short = 1,
+    }
+    enum TimeDisplayMode {
+        Regular = 0,
+        Military = 1,
     }
 }
 declare module Fayde.Controls.Internal {
