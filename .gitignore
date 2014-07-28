@@ -112,3 +112,10 @@ Source/Fayde.Experimental/Fayde.Experimental.d.ts
 Source/Fayde.Experimental/Fayde.Experimental.js
 Source/Fayde.Experimental.Test/ViewModels/MainViewModel.js
 Source/Fayde.Experimental.Test/Models/TestItem.js
+.idea
+node_modules
+testsite/lib
+src/_Version.ts
+test/lib
+test/runner.js
+test/tests/GridItemsControlTests.js
