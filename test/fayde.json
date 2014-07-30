@@ -1,0 +1,7 @@
+{
+  "libs": {
+    "fayde experimental": {
+      "exports": "Fayde.Experimental"
+    }
+  }
+}

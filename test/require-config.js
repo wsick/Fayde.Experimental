@@ -2,10 +2,9 @@ var require = {
     baseUrl: "./",
     paths: {
         "text": "lib/requirejs-text/text",
-        "Fayde": "lib/Fayde/Fayde",
-        "Fayde.Experimental": "lib/Fayde.Experimental/Fayde.Experimental"
+        "Fayde": "lib/Fayde/Fayde"
     },
-    deps: ["text", "Fayde", "Fayde.Experimental"],
+    deps: ["text", "Fayde"],
     shim: {
         "Fayde": {
             exports: "Fayde",
@@ -15,9 +14,4 @@ var require = {
             deps: ["Fayde"]
         }
     }
-};
-
-require.shim["Fayde.Experimental"] = require.shim["lib/Fayde.Experimental/Fayde.Experimental"] = {
-    exports: "Fayde.Experimental",
-    deps: ["Fayde"]
 };

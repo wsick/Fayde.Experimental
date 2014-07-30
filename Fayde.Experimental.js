@@ -1,7 +1,7 @@
 ﻿var Fayde;
 (function (Fayde) {
     (function (Experimental) {
-        Experimental.Version = '0.2.1';
+        Experimental.Version = '0.3.0';
     })(Fayde.Experimental || (Fayde.Experimental = {}));
     var Experimental = Fayde.Experimental;
 })(Fayde || (Fayde = {}));
