@@ -1,7 +1,3 @@
-/// <reference path="../qunit.d.ts" />
-/// <reference path="../lib/Fayde/Fayde.d.ts" />
-/// <reference path="../lib/Fayde.Experimental/Fayde.Experimental.d.ts" />
-
 import Grid = Fayde.Controls.Grid;
 import GridItemsControl = Fayde.Experimental.GridItemsControl;
 import GridItemsPresenter = Fayde.Experimental.GridItemsPresenter;

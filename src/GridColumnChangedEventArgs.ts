@@ -1,8 +1,7 @@
 module Fayde.Experimental {
-    export class GridColumnChangedEventArgs extends EventArgs {
+    export class GridColumnChangedEventArgs implements nullstone.IEventArgs {
         GridColumn: GridColumn;
         constructor(col: GridColumn) {
-            super();
             Object.defineProperty(this, "GridColumn", { value: col, writable: false });
         }
     }

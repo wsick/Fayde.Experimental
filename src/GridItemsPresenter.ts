@@ -51,15 +51,15 @@ module Fayde.Experimental {
 
         CellClicked = new RoutedEvent<CellMouseButtonEventArgs>();
         OnCellMouseLeftButtonDown(sender: any, e: Input.MouseButtonEventArgs) {
-            this.CellClicked.Raise(this, new CellMouseButtonEventArgs(sender, e));
+            this.CellClicked.raise(this, new CellMouseButtonEventArgs(sender, e));
         }
         CellMouseEnter = new RoutedEvent<CellMouseEventArgs>();
         OnCellMouseEnter(sender: any, e: Input.MouseEventArgs) {
-            this.CellMouseEnter.Raise(this, new CellMouseEventArgs(sender, e));
+            this.CellMouseEnter.raise(this, new CellMouseEventArgs(sender, e));
         }
         CellMouseLeave = new RoutedEvent<CellMouseEventArgs>();
         OnCellMouseLeave(sender: any, e: Input.MouseEventArgs) {
-            this.CellMouseLeave.Raise(this, new CellMouseEventArgs(sender, e));
+            this.CellMouseLeave.raise(this, new CellMouseEventArgs(sender, e));
         }
 
         OnColumnAdded(index: number, newColumn: GridColumn) {
@@ -170,7 +170,7 @@ module Fayde.Experimental {
             var rowdefs = grid.RowDefinitions;
             for (var i = 0, len = newItems.length; i < len; i++) {
                 var rowdef = new RowDefinition();
-                rowdef.Height = new Fayde.Controls.GridLength(1, Fayde.Controls.GridUnitType.Auto);
+                rowdef.Height = new Fayde.Controls.GridLength(1, minerva.controls.grid.GridUnitType.Auto);
                 rowdefs.Insert(index + i, rowdef);
             }
 
@@ -237,14 +237,14 @@ module Fayde.Experimental {
             col.PrepareContainerForCell(container, item);
             if (container instanceof Controls.Control)
                 (<Controls.ContentControl>container).Background = new Media.SolidColorBrush(Color.KnownColors.Transparent);
-            container.MouseLeftButtonDown.Subscribe(this.OnCellMouseLeftButtonDown, this);
-            container.MouseEnter.Subscribe(this.OnCellMouseEnter, this);
-            container.MouseLeave.Subscribe(this.OnCellMouseLeave, this);
+            container.MouseLeftButtonDown.on(this.OnCellMouseLeftButtonDown, this);
+            container.MouseEnter.on(this.OnCellMouseEnter, this);
+            container.MouseLeave.on(this.OnCellMouseLeave, this);
         }
         private _ClearContainer(col: GridColumn, container: UIElement, item: any) {
-            container.MouseLeave.Unsubscribe(this.OnCellMouseLeave, this);
-            container.MouseEnter.Unsubscribe(this.OnCellMouseEnter, this);
-            container.MouseLeftButtonDown.Unsubscribe(this.OnCellMouseLeftButtonDown, this);
+            container.MouseLeave.off(this.OnCellMouseLeave, this);
+            container.MouseEnter.off(this.OnCellMouseEnter, this);
+            container.MouseLeftButtonDown.off(this.OnCellMouseLeftButtonDown, this);
             col.ClearContainerForCell(container, item);
         }
 

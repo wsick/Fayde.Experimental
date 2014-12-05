@@ -1,7 +1,7 @@
 module Fayde.Experimental {
     import ColumnDefinition = Fayde.Controls.ColumnDefinition;
     import GridLength = Fayde.Controls.GridLength;
-    import GridUnitType = Fayde.Controls.GridUnitType;
+    import GridUnitType = minerva.controls.grid.GridUnitType;
 
     export class HeaderColumnDefinition extends Fayde.Controls.ColumnDefinition {
         private _LinkedListener: Fayde.Providers.IPropertyChangedListener = null;

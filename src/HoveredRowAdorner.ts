@@ -61,8 +61,8 @@ module Fayde.Experimental {
         OnAttached(gic: GridItemsControl) {
             super.OnAttached(gic);
             var presenter = gic.ItemsPresenter;
-            presenter.CellMouseEnter.Subscribe(this._CellMouseEnter, this);
-            presenter.CellMouseLeave.Subscribe(this._CellMouseLeave, this);
+            presenter.CellMouseEnter.on(this._CellMouseEnter, this);
+            presenter.CellMouseLeave.on(this._CellMouseLeave, this);
 
             var grid = presenter.Panel;
             grid.Children.Add(this._Element = this.CreateBackgroundElement());
@@ -75,8 +75,8 @@ module Fayde.Experimental {
         OnDetached(gic: GridItemsControl) {
             super.OnDetached(gic);
             var presenter = gic.ItemsPresenter;
-            presenter.CellMouseEnter.Unsubscribe(this._CellMouseEnter, this);
-            presenter.CellMouseLeave.Unsubscribe(this._CellMouseLeave, this);
+            presenter.CellMouseEnter.off(this._CellMouseEnter, this);
+            presenter.CellMouseLeave.off(this._CellMouseLeave, this);
 
             var grid = presenter.Panel;
             grid.Children.Remove(this._Element);

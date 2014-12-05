@@ -1,7 +1,11 @@
 {
   "libs": {
-    "fayde experimental": {
+    "Fayde.Experimental": {
       "exports": "Fayde.Experimental"
+    }
+  },
+  "themes": {
+    "Fayde.Experimental": {
     }
   }
 }

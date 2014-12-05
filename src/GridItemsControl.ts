@@ -1,4 +1,3 @@
-
 module Fayde.Experimental {
     import Grid = Fayde.Controls.Grid;
 
@@ -50,7 +49,7 @@ module Fayde.Experimental {
         }
 
         private InitSelection(presenter: GridItemsPresenter) {
-            presenter.CellClicked.Subscribe(this._CellClicked, this);
+            presenter.CellClicked.on(this._CellClicked, this);
         }
     }
 
@@ -62,14 +61,14 @@ module Fayde.Experimental {
 
         get ItemsPresenter(): GridItemsPresenter { return this.XamlNode.ItemsPresenter; }
 
-        static ItemsSourceProperty = DependencyProperty.Register("ItemsSource", () => IEnumerable_, GridItemsControl, null, (d, args) => (<GridItemsControl>d).OnItemsSourceChanged(args.OldValue, args.NewValue));
+        static ItemsSourceProperty = DependencyProperty.Register("ItemsSource", () => nullstone.IEnumerable_, GridItemsControl, null, (d, args) => (<GridItemsControl>d).OnItemsSourceChanged(args.OldValue, args.NewValue));
         static ColumnsProperty = DependencyProperty.RegisterImmutable<GridColumnCollection>("Columns", () => GridColumnCollection, GridItemsControl);
         static AdornersProperty = DependencyProperty.RegisterImmutable<Primitives.GridAdornerCollection>("Adorners", () => Primitives.GridAdornerCollection, GridItemsControl);
         static SelectedItemProperty = DependencyProperty.Register("SelectedItem", () => Object, GridItemsControl, undefined, (d, args) => (<GridItemsControl>d).OnSelectedItemChanged(args.OldValue, args.NewValue));
         static SelectedRowProperty = DependencyProperty.Register("SelectedRow", () => Number, GridItemsControl, -1, (d, args) => (<GridItemsControl>d).OnSelectedRowChanged(args.OldValue, args.NewValue));
         static EditingItemProperty = DependencyProperty.Register("EditingItem", () => Object, GridItemsControl, undefined, (d, args) => (<GridItemsControl>d).OnEditingItemChanged(args.OldValue, args.NewValue));
         static EditingRowProperty = DependencyProperty.Register("EditingRow", () => Number, GridItemsControl, -1, (d, args) => (<GridItemsControl>d).OnEditingRowChanged(args.OldValue, args.NewValue));
-        ItemsSource: IEnumerable<any>;
+        ItemsSource: nullstone.IEnumerable<any>;
         Columns: GridColumnCollection;
         Adorners: Primitives.GridAdornerCollection;
         SelectedItem: any;
@@ -77,30 +76,30 @@ module Fayde.Experimental {
         EditingItem: any;
         EditingRow: number;
 
-        SelectionChanged = new MulticastEvent<SelectionChangedEventArgs>();
+        SelectionChanged = new nullstone.Event<SelectionChangedEventArgs>();
         OnSelectionChanged() {
-            this.SelectionChanged.Raise(this, new SelectionChangedEventArgs(this.SelectedItem, this.SelectedRow));
+            this.SelectionChanged.raise(this, new SelectionChangedEventArgs(this.SelectedItem, this.SelectedRow));
         }
 
-        EditingChanged = new MulticastEvent<EditingChangedEventArgs>();
+        EditingChanged = new nullstone.Event<EditingChangedEventArgs>();
         OnEditingChanged() {
             var item = this.EditingItem;
             var row = this.EditingRow;
             this.ItemsPresenter.OnEditingItemChanged(item, row);
-            this.EditingChanged.Raise(this, new EditingChangedEventArgs(item, row));
+            this.EditingChanged.raise(this, new EditingChangedEventArgs(item, row));
         }
 
-        OnItemsSourceChanged(oldItemsSource: IEnumerable<any>, newItemsSource: IEnumerable<any>) {
-            var nc = Collections.INotifyCollectionChanged_.As(oldItemsSource);
+        OnItemsSourceChanged(oldItemsSource: nullstone.IEnumerable<any>, newItemsSource: nullstone.IEnumerable<any>) {
+            var nc = Collections.INotifyCollectionChanged_.as(oldItemsSource);
             if (nc)
-                nc.CollectionChanged.Unsubscribe(this._OnItemsSourceUpdated, this);
+                nc.CollectionChanged.off(this._OnItemsSourceUpdated, this);
             if (oldItemsSource)
                 this._RemoveItems(0, this._Items);
             if (newItemsSource)
-                this._AddItems(0, EnumerableEx.ToArray(newItemsSource));
-            var nc = Collections.INotifyCollectionChanged_.As(newItemsSource);
+                this._AddItems(0, nullstone.IEnumerable_.toArray(newItemsSource));
+            var nc = Collections.INotifyCollectionChanged_.as(newItemsSource);
             if (nc)
-                nc.CollectionChanged.Subscribe(this._OnItemsSourceUpdated, this);
+                nc.CollectionChanged.on(this._OnItemsSourceUpdated, this);
         }
         private _OnItemsSourceUpdated(sender: any, e: Collections.CollectionChangedEventArgs) {
             switch (e.Action) {
@@ -193,11 +192,11 @@ module Fayde.Experimental {
             this._ToggleEditCommand = new MVVM.RelayCommand((args: IEventBindingArgs<Input.MouseButtonEventArgs>) => this.EditingItem = (this.EditingItem === args.parameter) ? undefined : args.parameter);
 
             var cols = GridItemsControl.ColumnsProperty.Initialize(this);
-            cols.CollectionChanged.Subscribe(this._ColumnsChanged, this);
-            cols.ItemChanged.Subscribe(this._ColumnChanged, this);
+            cols.CollectionChanged.on(this._ColumnsChanged, this);
+            cols.ItemChanged.on(this._ColumnChanged, this);
 
             var ads = GridItemsControl.AdornersProperty.Initialize(this);
-            ads.CollectionChanged.Subscribe(this._AdornersChanged, this);
+            ads.CollectionChanged.on(this._AdornersChanged, this);
         }
 
         OnItemsAdded(index: number, newItems: any[]) {
@@ -272,5 +271,5 @@ module Fayde.Experimental {
             }
         }
     }
-    Xaml.Content(GridItemsControl, GridItemsControl.ColumnsProperty);
+    Markup.Content(GridItemsControl, GridItemsControl.ColumnsProperty);
 }

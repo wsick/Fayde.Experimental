@@ -51,12 +51,12 @@ module Fayde.Experimental {
             grid.Children.Add(this._Element = this.CreateElement());
             Fayde.Controls.Panel.SetZIndex(this._Element, -5);
             Grid.SetColumnSpan(this._Element, grid.ColumnDefinitions.Count);
-            gic.SelectionChanged.Subscribe(this._SelectionChanged, this);
+            gic.SelectionChanged.on(this._SelectionChanged, this);
             this._Update(undefined, -1);
         }
         OnDetached(gic: GridItemsControl) {
             super.OnDetached(gic);
-            gic.SelectionChanged.Unsubscribe(this._SelectionChanged, this);
+            gic.SelectionChanged.off(this._SelectionChanged, this);
             var grid = gic.ItemsPresenter.Panel;
             grid.Children.Remove(this._Element);
             this._Element = null;
