@@ -1,6 +1,6 @@
 {
-  "name": "Fayde.Experimental",
-  "version": "0.3.0",
+  "name": "fayde.experimental",
+  "version": "0.4.0",
   "ignore": [
     "build",
     "nuget",
