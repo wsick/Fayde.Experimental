@@ -62,6 +62,7 @@ module.exports = function (grunt) {
                     { src: './lib/nullstone', dest: '<%= dirs.test.lib %>/nullstone' },
                     { src: './lib/minerva', dest: '<%= dirs.test.lib %>/minerva' },
                     { src: './lib/fayde', dest: '<%= dirs.test.lib %>/fayde' },
+                    { src: './lib/fayde.controls', dest: '<%= dirs.test.lib %>/fayde.controls' },
                     { src: './lib/qunit', dest: '<%= dirs.test.lib %>/qunit' },
                     { src: './lib/requirejs', dest: '<%= dirs.test.lib %>/requirejs' },
                     { src: './lib/requirejs-text', dest: '<%= dirs.test.lib %>/requirejs-text' },
@@ -72,8 +73,10 @@ module.exports = function (grunt) {
             },
             testsite: {
                 files: [
+                    { src: './lib/nullstone', dest: '<%= dirs.testsite.lib %>/nullstone' },
                     { src: './lib/minerva', dest: '<%= dirs.testsite.lib %>/minerva' },
                     { src: './lib/fayde', dest: '<%= dirs.testsite.lib %>/fayde' },
+                    { src: './lib/fayde.controls', dest: '<%= dirs.testsite.lib %>/fayde.controls' },
                     { src: './lib/requirejs', dest: '<%= dirs.testsite.lib %>/requirejs' },
                     { src: './lib/requirejs-text', dest: '<%= dirs.testsite.lib %>/requirejs-text' },
                     { src: './themes', dest: '<%= dirs.testsite.lib %>/<%= meta.name %>/themes' },
@@ -107,7 +110,8 @@ module.exports = function (grunt) {
                     '!<%= dirs.test.lib %>/**/*.ts',
                     'lib/nullstone/dist/nullstone.d.ts',
                     'lib/minerva/dist/minerva.d.ts',
-                    'lib/fayde/dist/fayde.d.ts'
+                    'lib/fayde/dist/fayde.d.ts',
+                    'dist/<%= meta.name %>.d.ts'
                 ],
                 dest: dirs.test.build,
                 options: {
@@ -124,7 +128,8 @@ module.exports = function (grunt) {
                     '!<%= dirs.testsite.lib %>/**/*.ts',
                     'lib/nullstone/dist/nullstone.d.ts',
                     'lib/minerva/dist/minerva.d.ts',
-                    'lib/fayde/dist/fayde.d.ts'
+                    'lib/fayde/dist/fayde.d.ts',
+                    'dist/<%= meta.name %>.d.ts'
                 ],
                 dest: dirs.testsite.build,
                 options: {

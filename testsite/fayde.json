@@ -12,6 +12,7 @@
     }
   },
   "themes": {
+    "exjs": "none",
     "Fayde.Controls": {
     },
     "Fayde.Experimental": {

@@ -114,3 +114,5 @@ src/_Version.ts
 test/lib
 test/runner.js
 lib/
+testsite/.build/
+test/.build/

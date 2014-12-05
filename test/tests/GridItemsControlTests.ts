@@ -42,7 +42,7 @@ export function load() {
 
     test("Column movement", () => {
         var gic = new GridItemsControl();
-        gic.Measure(size.fromRaw(100, 100));
+        gic.Measure(new minerva.Size(100, 100));
 
         gic.ItemsSource = mock1;
 
@@ -72,7 +72,7 @@ export function load() {
 
     test("Item movement", () => {
         var gic = new GridItemsControl();
-        gic.Measure(size.fromRaw(100, 100));
+        gic.Measure(new minerva.Size(100, 100));
 
         gic.ItemsSource = mock1;
 

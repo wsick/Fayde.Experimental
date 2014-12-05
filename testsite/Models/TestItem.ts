@@ -4,7 +4,8 @@
     Age: number;
     SpecialDay: DateTime;
     CreateTime: TimeSpan;
-    constructor(firstName?: string, lastName?: string, age?: number, specialDay?: DateTime) {
+
+    constructor (firstName?: string, lastName?: string, age?: number, specialDay?: DateTime) {
         super();
         this.FirstName = firstName;
         this.LastName = lastName;

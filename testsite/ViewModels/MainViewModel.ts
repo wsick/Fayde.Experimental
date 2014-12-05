@@ -1,10 +1,9 @@
-/// <reference path="../lib/fayde/Fayde.d.ts" />
-
 import TestItem = require("../Models/TestItem");
 
 class MainViewModel extends Fayde.MVVM.ViewModelBase {
     Items = new Fayde.Collections.ObservableCollection<TestItem>();
-    constructor() {
+
+    constructor () {
         super();
         this.Items.AddRange([
             new TestItem("First1", "Last1", 10),
@@ -13,7 +12,8 @@ class MainViewModel extends Fayde.MVVM.ViewModelBase {
             new TestItem("First4", "Last4", 14)
         ]);
     }
-    RemoveItem(args: Fayde.IEventBindingArgs<Fayde.RoutedEventArgs>) {
+
+    RemoveItem (args: Fayde.IEventBindingArgs<Fayde.RoutedEventArgs>) {
         if (!args.parameter)
             return;
         this.Items.Remove(args.parameter);
