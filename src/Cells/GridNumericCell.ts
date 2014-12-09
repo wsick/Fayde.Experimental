@@ -4,7 +4,7 @@ module Fayde.Experimental {
     export class GridNumericCell extends GridInputCell {
         constructor() {
             super();
-            this.DefaultStyleKey = (<any>this).constructor;
+            this.DefaultStyleKey = GridNumericCell;
             this.EditProperty = "Value";
         }
     }

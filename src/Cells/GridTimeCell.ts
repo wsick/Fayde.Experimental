@@ -4,7 +4,7 @@ module Fayde.Experimental {
     export class GridTimeCell extends GridInputCell {
         constructor() {
             super();
-            this.DefaultStyleKey = (<any>this).constructor;
+            this.DefaultStyleKey = GridTimeCell;
         }
     }
     Fayde.Controls.TemplateParts(GridDateCell, 

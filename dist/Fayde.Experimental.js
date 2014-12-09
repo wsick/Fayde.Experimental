@@ -2,7 +2,7 @@ var Fayde;
 (function (Fayde) {
     var Experimental;
     (function (Experimental) {
-        Experimental.Version = '0.4.0';
+        Experimental.Version = '0.4.1';
     })(Experimental = Fayde.Experimental || (Fayde.Experimental = {}));
 })(Fayde || (Fayde = {}));
 var __extends = this.__extends || function (d, b) {
@@ -195,7 +195,7 @@ var Fayde;
             __extends(GridHeadersControl, _super);
             function GridHeadersControl() {
                 _super.call(this);
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridHeadersControl;
                 var coll = GridHeadersControl.HeadersProperty.Initialize(this);
                 coll.CollectionChanged.on(this._HeadersChanged, this);
                 coll.ItemChanged.on(this._HeaderChanged, this);
@@ -460,7 +460,7 @@ var Fayde;
                 this._IsCoercingSel = false;
                 this._IsCoercingEdit = false;
                 this._Items = [];
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridItemsControl;
                 this._ToggleEditCommand = new Fayde.MVVM.RelayCommand(function (args) { return _this.EditingItem = (_this.EditingItem === args.parameter) ? undefined : args.parameter; });
                 var cols = GridItemsControl.ColumnsProperty.Initialize(this);
                 cols.CollectionChanged.on(this._ColumnsChanged, this);
@@ -1207,7 +1207,7 @@ var Fayde;
             __extends(GridCell, _super);
             function GridCell() {
                 _super.call(this);
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridCell;
             }
             GridCell.prototype.OnIsEditingChanged = function (oldIsEditing, newIsEditing) {
                 this.UpdateVisualState();
@@ -1313,7 +1313,7 @@ var Fayde;
             __extends(GridDateCell, _super);
             function GridDateCell() {
                 _super.call(this);
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridDateCell;
             }
             return GridDateCell;
         })(Experimental.GridInputCell);
@@ -1330,7 +1330,7 @@ var Fayde;
             __extends(GridHeaderCell, _super);
             function GridHeaderCell() {
                 _super.call(this);
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridHeaderCell;
             }
             return GridHeaderCell;
         })(Fayde.Controls.ContentControl);
@@ -1346,7 +1346,7 @@ var Fayde;
             __extends(GridNumericCell, _super);
             function GridNumericCell() {
                 _super.call(this);
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridNumericCell;
                 this.EditProperty = "Value";
             }
             return GridNumericCell;
@@ -1365,7 +1365,7 @@ var Fayde;
             __extends(GridTextCell, _super);
             function GridTextCell() {
                 _super.call(this);
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridTextCell;
             }
             return GridTextCell;
         })(Experimental.GridInputCell);
@@ -1383,7 +1383,7 @@ var Fayde;
             __extends(GridTimeCell, _super);
             function GridTimeCell() {
                 _super.call(this);
-                this.DefaultStyleKey = this.constructor;
+                this.DefaultStyleKey = GridTimeCell;
             }
             return GridTimeCell;
         })(Experimental.GridInputCell);

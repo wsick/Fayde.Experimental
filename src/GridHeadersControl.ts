@@ -33,7 +33,7 @@ module Fayde.Experimental {
 
         constructor() {
             super();
-            this.DefaultStyleKey = (<any>this).constructor;
+            this.DefaultStyleKey = GridHeadersControl;
             var coll = GridHeadersControl.HeadersProperty.Initialize(this);
             coll.CollectionChanged.on(this._HeadersChanged, this);
             coll.ItemChanged.on(this._HeaderChanged, this);

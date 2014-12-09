@@ -1,6 +1,6 @@
 {
   "name": "fayde.experimental",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "Gruntfile.js",
   "devDependencies": {
     "connect-livereload": "^0.4.0",

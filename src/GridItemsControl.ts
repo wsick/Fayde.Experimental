@@ -187,7 +187,7 @@ module Fayde.Experimental {
 
         constructor() {
             super();
-            this.DefaultStyleKey = (<any>this).constructor;
+            this.DefaultStyleKey = GridItemsControl;
 
             this._ToggleEditCommand = new MVVM.RelayCommand((args: IEventBindingArgs<Input.MouseButtonEventArgs>) => this.EditingItem = (this.EditingItem === args.parameter) ? undefined : args.parameter);
 

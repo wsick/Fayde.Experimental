@@ -4,7 +4,7 @@ module Fayde.Experimental {
     export class GridTextCell extends GridInputCell {
         constructor() {
             super();
-            this.DefaultStyleKey = (<any>this).constructor;
+            this.DefaultStyleKey = GridTextCell;
         }
     }
     Fayde.Controls.TemplateParts(GridTextCell, 
