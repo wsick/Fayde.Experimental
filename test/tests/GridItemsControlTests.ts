@@ -90,7 +90,7 @@ export function load() {
         var newItem = { Name: "Name2", Description: "Description 2" };
 
         //Add item
-        mock1.Insert(newItem, 1);
+        mock1.Insert(1, newItem);
         strictEqual(grid.RowDefinitions.Count, 5);
         strictEqual(grid.Children.Count, 10);
         ok(verifyColumns(grid, 5, 2), "cols");

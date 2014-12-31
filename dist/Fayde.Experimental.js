@@ -2,7 +2,7 @@ var Fayde;
 (function (Fayde) {
     var Experimental;
     (function (Experimental) {
-        Experimental.Version = '0.4.1';
+        Experimental.Version = '0.5.0';
     })(Experimental = Fayde.Experimental || (Fayde.Experimental = {}));
 })(Fayde || (Fayde = {}));
 var __extends = this.__extends || function (d, b) {
