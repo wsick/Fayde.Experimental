@@ -17,5 +17,9 @@
     },
     "Fayde.Experimental": {
     }
+  },
+  "debug": {
+    "warnMissingThemes": false,
+    "warnBrokenPath": false
   }
 }
