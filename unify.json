@@ -1,0 +1,15 @@
+{
+  "name": "Fayde.Experimental",
+  "client": {
+    "files": [
+      "test/fayde.json",
+      "testsite/fayde.json"
+    ]
+  },
+  "type": "lib",
+  "dist": "dist/Fayde.Experimental.js",
+  "library": {
+    "type": "export",
+    "exports": "Fayde.Experimental"
+  }
+}
