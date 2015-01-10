@@ -1,10 +1,8 @@
 {
   "name": "fayde.experimental",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "ignore": [
     "build",
-    "nuget",
-    "src",
     "test",
     "testsite",
     "typings",
