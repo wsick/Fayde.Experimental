@@ -1,5 +1,5 @@
 module runner {
-    var libpath = "lib/Fayde.Experimental/dist/Fayde.Experimental";
+    var libpath = "lib/fayde.experimental/dist/fayde.experimental";
     var testModules = [
         ".build/tests/GridItemsControlTests"
     ];

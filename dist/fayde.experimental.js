@@ -2,7 +2,7 @@ var Fayde;
 (function (Fayde) {
     var Experimental;
     (function (Experimental) {
-        Experimental.Version = '0.5.2';
+        Experimental.Version = '0.6.0';
     })(Experimental = Fayde.Experimental || (Fayde.Experimental = {}));
 })(Fayde || (Fayde = {}));
 var __extends = this.__extends || function (d, b) {
@@ -1671,4 +1671,4 @@ var Fayde;
         Experimental.GridTimeColumn = GridTimeColumn;
     })(Experimental = Fayde.Experimental || (Fayde.Experimental = {}));
 })(Fayde || (Fayde = {}));
-//# sourceMappingURL=Fayde.Experimental.js.map
+//# sourceMappingURL=fayde.experimental.js.map

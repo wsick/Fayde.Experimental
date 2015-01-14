@@ -1,15 +1,18 @@
 {
   "libs": {
-    "Fayde.Experimental": {
-      "exports": "Fayde.Experimental"
+    "fayde.experimental": {
+      "exports": "Fayde.Experimental",
+      "deps": [
+        "fayde.controls"
+      ]
     },
-    "Fayde.Controls": {
+    "fayde.controls": {
       "exports": "Fayde.Controls"
     }
   },
   "themes": {
-    "Fayde.Experimental": {},
-    "Fayde.Controls": {}
+    "fayde.experimental": {},
+    "fayde.controls": {}
   },
   "debug": {
     "warnMissingThemes": false,

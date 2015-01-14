@@ -1,5 +1,5 @@
 {
-  "name": "Fayde.Experimental",
+  "name": "fayde.experimental",
   "client": {
     "tests": [
       {
@@ -13,12 +13,12 @@
     ]
   },
   "type": "lib",
-  "dist": "dist/Fayde.Experimental.js",
+  "dist": "dist/fayde.experimental",
   "library": {
     "type": "export",
     "exports": "Fayde.Experimental"
   },
   "typings": [
-    "dist/Fayde.Experimental.d.ts"
+    "dist/fayde.experimental.d.ts"
   ]
 }
