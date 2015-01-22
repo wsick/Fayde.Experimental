@@ -18,6 +18,7 @@
     "type": "export",
     "exports": "Fayde.Experimental"
   },
+  "themes": {},
   "typings": [
     "dist/fayde.experimental.d.ts"
   ]
